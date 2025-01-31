@@ -9,7 +9,7 @@ const WelcomePage: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <Layout>
+    <Layout title="Welcome to Soccer Match Finder">
       <Container maxWidth="lg">
         <Grid container spacing={4} alignItems="center">
           
