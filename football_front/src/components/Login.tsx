@@ -13,6 +13,8 @@ import {
 } from "@mui/material";
 import { Email, Lock } from "@mui/icons-material";
 import Layout from "./page_tamplate/Layout";
+const API_URL = import.meta.env.VITE_API_URL;
+
 
 // Validation schema
 const schema = yup.object().shape({
@@ -39,7 +41,7 @@ const LoginPage: React.FC = () => {
 
   // Check if user is logged in
   useEffect(() => {
-    fetch("http://localhost:3000/auth/user", { credentials: "include" })
+    fetch(`${API_URL}/auth/user`, { credentials: "include" })
       .then((res) => res.json())
       .then((data) => {
         if (data.user) {
@@ -50,7 +52,7 @@ const LoginPage: React.FC = () => {
 
   const onSubmit = async (data: LoginData) => {
     try {
-      const response = await fetch("http://localhost:3000/auth/login", {
+      const response = await fetch(`${API_URL}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
@@ -88,9 +90,7 @@ const LoginPage: React.FC = () => {
       >
 
         <Box sx={{ p: 4, bgcolor: "white", borderRadius: 2, boxShadow: 3, width: "100%", maxWidth: 400, textAlign: "center" }}>
-       <Typography variant="h4" align="center" sx={{ mt: 5, mb: 3, color: "black" }}>
-          Login to find a game match!
-        </Typography>
+     
        
 
           {user ? (
@@ -98,8 +98,13 @@ const LoginPage: React.FC = () => {
               Welcome, {user.displayName}!
             </Typography>
           ) : (
+            
             <form onSubmit={handleSubmit(onSubmit)}>
               <Stack spacing={2}>
+
+              <Typography variant="h4" align="center" sx={{ mt: 5, mb: 3, color: "black" }}>
+                Login to find a game match!
+              </Typography>
 
                 {/* Email Field */}
                 <Controller

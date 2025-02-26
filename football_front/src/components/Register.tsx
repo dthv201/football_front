@@ -21,6 +21,8 @@ import {
 import { AccountCircle, Email, Lock, PhotoCamera } from "@mui/icons-material";
 import Layout from "./page_tamplate/Layout";
 const defaultAvatar = "/avatar.png";
+const API_URL = import.meta.env.VITE_API_URL;
+
 
 const schema = yup.object().shape({
   username: yup.string().required("Username is required"),
@@ -71,7 +73,7 @@ const RegisterPage: React.FC = () => {
       if (file) {
         formData.append("img", file);
       }
-      const response = await fetch("http://localhost:3000/auth/register", {
+      const response = await fetch(`${API_URL}/auth/register`, {
         method: "POST",
         body: formData,
       });
