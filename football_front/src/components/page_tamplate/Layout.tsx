@@ -16,7 +16,7 @@ const Layout: React.FC<LayoutProps> = ({ children , title}) => {
         display: "flex",
         flexDirection: "column",
         width: "100vw",
-        background: "linear-gradient(to bottom, #E5A561, #FFF6A3, #FDFFF1)", // Light Yellow to Soft Orange
+        background: "linear-gradient(to bottom, #E5A561, #FFF6A3, #FDFFF1)", 
       }}
     >
       <Header title={title} />

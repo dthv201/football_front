@@ -1,8 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { useDropzone } from "react-dropzone";
 import {
   Box,
   Button,
@@ -15,12 +14,14 @@ import {
   Radio,
   FormLabel,
   FormControl,
-  Stack
+  Stack,
+  Avatar,
+  IconButton
 } from "@mui/material";
 import { AccountCircle, Email, Lock, PhotoCamera } from "@mui/icons-material";
-import Layout from "../components/page_tamplate/Layout";
+import Layout from "./page_tamplate/Layout";
+const defaultAvatar = "/avatar.png";
 
-// Validation Schema using Yup
 const schema = yup.object().shape({
   username: yup.string().required("Username is required"),
   email: yup.string().email("Invalid email").required("Email is required"),
@@ -32,46 +33,97 @@ const schema = yup.object().shape({
   skillLevel: yup.string().required("Please select a skill level"),
 });
 
+interface FormData {
+  username: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+  skillLevel: string;
+  img?: FileList;
+}
+
 const RegisterPage: React.FC = () => {
-  const { control, handleSubmit, formState: { errors } } = useForm({
+  const { control, handleSubmit, register, watch, formState: { errors } } = useForm<FormData>({
     resolver: yupResolver(schema),
   });
 
-  const [profilePic, setProfilePic] = useState<File | null>(null);
+  const [file, setFile] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string>(defaultAvatar);
 
-  // Handle file upload
-  const { getRootProps, getInputProps } = useDropzone({
-    accept: { 'image/*': [] },
-    maxFiles: 1,
-    onDrop: (acceptedFiles) => {
-      setProfilePic(acceptedFiles[0]);
-    },
-  });
+  const imgFiles = watch("img");
 
-  interface FormData {
-    username: string;
-    email: string;
-    password: string;
-    confirmPassword: string;
-    skillLevel: string;
-  }
+  useEffect(() => {
+    if (imgFiles && imgFiles.length > 0) {
+      const selectedFile = imgFiles[0];
+      setFile(selectedFile);
+      setPreview(URL.createObjectURL(selectedFile));
+    }
+  }, [imgFiles]);
 
-  const onSubmit = (data: FormData) => {
-    console.log("Registration Data:", { ...data, profilePic });
-    // Here you can call an API to register the user
+  const onSubmit = async (data: FormData) => {
+    console.log("Registration Data:", { ...data, img: file });
+    try {
+      const formData = new FormData();
+      formData.append("username", data.username);
+      formData.append("email", data.email);
+      formData.append("password", data.password);
+      formData.append("skillLevel", data.skillLevel);
+      if (file) {
+        formData.append("img", file);
+      }
+      const response = await fetch("http://localhost:3000/auth/register", {
+        method: "POST",
+        body: formData,
+      });
+      const result = await response.json();
+      if (response.ok) {
+        alert("Registration successful. Please login to continue.");
+      } else {
+        alert(`Error: ${result.message}`);
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      alert("Something went wrong. Please try again.");
+    }
+  };
+
+  const handleGoogleLogin = () => {
+    window.location.href = "https://c767-109-186-93-14.ngrok-free.app/auth/google";
   };
 
   return (
     <Layout title="Register">
       <Container maxWidth="sm">
-        <Box sx={{ mt: 5, p: 4, bgcolor: "white", borderRadius: 2, boxShadow: 3 }}>
-          <Typography variant="h4" align="center" fontWeight="bold" gutterBottom sx={{ color: "black" }}>
-            Register
-          </Typography>
-
+        <Box sx={{ mt: 5, p: 4, bgcolor: "white", borderRadius: 2, boxShadow: 3, marginBlockEnd: 5 }}>
           <form onSubmit={handleSubmit(onSubmit)}>
             <Stack spacing={2}>
-              
+              {/* Profile Picture Upload */}
+              <Box display="flex" justifyContent="center" position="relative">
+                <Avatar src={preview} sx={{ width: 200, height: 200 }} />
+                <IconButton
+                  sx={{
+                    position: "absolute",
+                    bottom: 0,
+                    right: 0,
+                    bgcolor: "white",
+                    border: "1px solid gray",
+                  }}
+                  onClick={() => document.getElementById("imgInput")?.click()}
+                >
+                  <PhotoCamera />
+                </IconButton>
+              </Box>
+              <Typography variant="subtitle1" align="center" sx={{ color: "black" }}>Upload Profile Picture</Typography>
+
+              {/* Hidden File Input */}
+              <input
+                id="imgInput"
+                type="file"
+                accept="image/jpeg, image/png"
+                {...register("img")}
+                style={{ display: "none" }}
+              />
+
               {/* Username Field */}
               <Controller
                 name="username"
@@ -180,7 +232,7 @@ const RegisterPage: React.FC = () => {
                 <Controller
                   name="skillLevel"
                   control={control}
-                  defaultValue=""
+                  defaultValue="Beginner"
                   render={({ field }) => (
                     <RadioGroup {...field} row sx={{ color: "black" }}>
                       <FormControlLabel value="Beginner" control={<Radio />} label="Beginner" sx={{ color: "black" }} />
@@ -196,31 +248,6 @@ const RegisterPage: React.FC = () => {
                 )}
               </FormControl>
 
-              {/* Profile Picture Upload */}
-              <Typography variant="subtitle1" sx={{ color: "black" }}>Upload Profile Picture</Typography>
-              <Box
-                {...getRootProps()}
-                sx={{
-                  border: "2px dashed gray",
-                  padding: 2,
-                  textAlign: "center",
-                  cursor: "pointer",
-                  bgcolor: "#f9f9f9",
-                  "&:hover": { bgcolor: "#f1f1f1" },
-                  color: "black"
-                }}
-              >
-                <input {...getInputProps()} />
-                {profilePic ? (
-                  <Typography variant="body2" sx={{ color: "black" }}>{profilePic.name}</Typography>
-                ) : (
-                  <Typography variant="body2" sx={{ color: "black" }}>
-                    Drag & drop an image here, or click to select one
-                  </Typography>
-                )}
-                <PhotoCamera fontSize="large" />
-              </Box>
-
               {/* Submit Button */}
               <Button
                 type="submit"
@@ -229,6 +256,16 @@ const RegisterPage: React.FC = () => {
                 sx={{ bgcolor: "#4DB6E5", color: "white", "&:hover": { bgcolor: "#3EA3D3" } }}
               >
                 Register
+              </Button>
+
+              {/* Google Login Button */}
+              <Button
+                variant="contained"
+                color="secondary"
+                onClick={handleGoogleLogin}
+                sx={{ bgcolor: "#DB4437", color: "white", "&:hover": { bgcolor: "#C1351D" } }}
+              >
+                Sign in with Google
               </Button>
             </Stack>
           </form>
