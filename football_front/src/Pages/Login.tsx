@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -12,8 +12,10 @@ import {
   Stack
 } from "@mui/material";
 import { Email, Lock } from "@mui/icons-material";
-import Layout from "./page_tamplate/Layout";
-const API_URL = import.meta.env.VITE_API_URL;
+import Layout from "../components/page_tamplate/Layout";
+import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
+import { googleSignin } from "../services/auth";
+// const API_URL = import.meta.env.VITE_API_URL;
 
 
 // Validation schema
@@ -39,27 +41,44 @@ const LoginPage: React.FC = () => {
   
   const [user, setUser] = useState<User | null>(null);
 
-  // Check if user is logged in
-  useEffect(() => {
-    fetch(`${API_URL}/auth/user`, { credentials: "include" })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.user) {
-          setUser(data.user);
-        }
-      });
-  }, []);
+  // Check if user is logged in not yet implemented
+//   useEffect(() => {
+//     fetch(`/auth/user`, { credentials: "include" })
+//       .then((res) => res.json())
+//       .then((data) => {
+//         if (data.user) {
+//           setUser(data.user);
+//         }
+//       });
+//   }, []);
+
+const onGoogleSuccess = async (credentialResponse: CredentialResponse) => {
+  console.log("Google response:", credentialResponse);
+  try {
+    const res = await googleSignin(credentialResponse);
+    console.log("Backend response:", res);
+    alert("Login successful.");
+    // Optionally handle tokens or navigation based on response
+  } catch (error) {
+    console.error("Error during Google sign-in:", error);
+    alert("Something went wrong with Google sign-in.");
+  }
+};
+
+const onGoogleFailure = async () => {
+  console.log("Google login failed.");
+};
 
   const onSubmit = async (data: LoginData) => {
     try {
-      const response = await fetch(`${API_URL}/auth/login`, {
+      const response = await fetch(`/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
-      });
-
+              });
+  
       const result = await response.json();
-
+  
       if (response.ok) {
         alert("Login successful!");
         setUser(result.user);
@@ -71,11 +90,7 @@ const LoginPage: React.FC = () => {
       alert("Something went wrong. Please try again.");
     }
   };
-
-  // Google Login
-  const handleGoogleLogin = () => {
-    window.location.href = "http://localhost:3000/auth/google";
-  };
+  
 
   return (
     <Layout title="Login">
@@ -94,7 +109,7 @@ const LoginPage: React.FC = () => {
        
 
           {user ? (
-            <Typography variant="h5" align="center">
+            <Typography variant="h5" align="center" sx={{ mt: 5, mb: 3, color: "black" }}>
               Welcome, {user.displayName}!
             </Typography>
           ) : (
@@ -156,6 +171,10 @@ const LoginPage: React.FC = () => {
                 />
 
                 {/* Login Button */}
+              
+
+                <Box sx={{ display: "flex", gap: 2 }}>
+                <GoogleLogin  onSuccess={onGoogleSuccess} onError={onGoogleFailure}/>
                 <Button
                   type="submit"
                   variant="contained"
@@ -164,16 +183,7 @@ const LoginPage: React.FC = () => {
                 >
                   Login
                 </Button>
-
-                {/* Google Login Button */}
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  onClick={handleGoogleLogin}
-                  sx={{ bgcolor: "#DB4437", color: "white", "&:hover": { bgcolor: "#C1351D" } }}
-                >
-                  Sign in with Google
-                </Button>
+                </Box>
 
               </Stack>
             </form>

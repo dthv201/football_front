@@ -3,7 +3,7 @@ import { Box, Typography, Button, Grid, Container } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import EditIcon from "@mui/icons-material/Edit";
 import LoginIcon from "@mui/icons-material/Login";
-import Layout from "./page_tamplate/Layout";
+import Layout from "../components/page_tamplate/Layout";
 
 const WelcomePage: React.FC = () => {
   const navigate = useNavigate();
@@ -22,9 +22,19 @@ const WelcomePage: React.FC = () => {
       <Grid container spacing={4} alignItems="center">
         {/* Left Content */}
         <Grid item xs={12} md={6} sx={{ textAlign: "center", padding: "2rem" }}>
-          <Typography variant="h3" sx={{ fontWeight: 800, color: "#333" }}>
-            Find Your Next Soccer Match!
-          </Typography>
+        <Typography 
+          variant="h3" 
+          sx={{ 
+            fontWeight: 800, 
+            color: "#333",
+            fontSize: { xs: "1.8rem", sm: "2.5rem", md: "3rem" }, 
+            textAlign: "center"
+          }}
+        >
+          Find Your Next Soccer Match!
+        </Typography>
+  
+          {/* Description */}
           <Typography variant="body1" sx={{ color: "#4D4D4D", mt: 2 }}>
             Connect with fellow players, join local games, and build teams effortlessly. Join our community and start playing today!
           </Typography>
