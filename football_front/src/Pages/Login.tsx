@@ -41,17 +41,6 @@ const LoginPage: React.FC = () => {
   
   const [user, setUser] = useState<User | null>(null);
 
-  // Check if user is logged in not yet implemented
-//   useEffect(() => {
-//     fetch(`/auth/user`, { credentials: "include" })
-//       .then((res) => res.json())
-//       .then((data) => {
-//         if (data.user) {
-//           setUser(data.user);
-//         }
-//       });
-//   }, []);
-
 const onGoogleSuccess = async (credentialResponse: CredentialResponse) => {
   console.log("Google response:", credentialResponse);
   try {

@@ -1,9 +1,9 @@
 import React from "react";
-import { Control, Controller } from "react-hook-form";
+import { Control, Controller, FieldValues, Path } from "react-hook-form";
 import { TextField, InputAdornment } from "@mui/material";
 
-interface FormInputProps {
-  name: string;
+interface FormInputProps<T extends FieldValues = FieldValues> {
+  name: Path<T>;
   control: Control<T>;
   label: string;
   icon?: React.ReactNode;
@@ -11,12 +11,19 @@ interface FormInputProps {
   error?: string;
 }
 
-const FormInput: React.FC<FormInputProps> = ({ name, control, label, icon, type = "text", error }) => {
+const FormInput = <T extends FieldValues = FieldValues>({
+  name,
+  control,
+  label,
+  icon,
+  type = "text",
+  error,
+}: FormInputProps<T>) => {
   return (
     <Controller
       name={name}
       control={control}
-      defaultValue=""
+      defaultValue={undefined}
       render={({ field }) => (
         <TextField
           {...field}
@@ -27,7 +34,9 @@ const FormInput: React.FC<FormInputProps> = ({ name, control, label, icon, type 
           error={!!error}
           helperText={error}
           InputProps={{
-            startAdornment: icon ? <InputAdornment position="start">{icon}</InputAdornment> : null,
+            startAdornment: icon ? (
+              <InputAdornment position="start">{icon}</InputAdornment>
+            ) : null,
           }}
         />
       )}
