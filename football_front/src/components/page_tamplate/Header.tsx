@@ -3,7 +3,10 @@ import { AppBar, Toolbar, Typography, IconButton } from "@mui/material";
 import SportsSoccerIcon from "@mui/icons-material/SportsSoccer";
 import MenuIcon from "@mui/icons-material/Menu";
 
-const Header: React.FC = () => {
+interface HeaderProps {
+  title: string;
+}
+const Header: React.FC<HeaderProps> = ({title}) => {
   return (
     <AppBar position="static" sx={{ backgroundColor: "#FFF6A3", color: "#333", boxShadow: "none" }}>
       <Toolbar>
@@ -11,7 +14,7 @@ const Header: React.FC = () => {
           <MenuIcon />
         </IconButton>
         <Typography variant="h6" sx={{ flexGrow: 1, textAlign: "center" }}>
-          Soccer Connect
+          {title}
         </Typography>
         <SportsSoccerIcon />
       </Toolbar>
