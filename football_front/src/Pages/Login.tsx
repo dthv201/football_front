@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import {useNavigate} from 'react-router';
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -30,6 +31,7 @@ interface LoginData {
 }
 
 const LoginPage: React.FC = () => {
+  const navigate = useNavigate();
   const { control, handleSubmit, formState: { errors } } = useForm<LoginData>({
     resolver: yupResolver(schema),
   });
@@ -47,6 +49,7 @@ const onGoogleSuccess = async (credentialResponse: CredentialResponse) => {
     const res = await googleSignin(credentialResponse);
     console.log("Backend response:", res);
     alert("Login successful.");
+    navigate('/profile');
     // Optionally handle tokens or navigation based on response
   } catch (error) {
     console.error("Error during Google sign-in:", error);
@@ -69,8 +72,8 @@ const onGoogleFailure = async () => {
       const result = await response.json();
   
       if (response.ok) {
-        alert("Login successful!");
         setUser(result.user);
+        navigate('/profile');
       } else {
         alert(`Error: ${result.message}`);
       }

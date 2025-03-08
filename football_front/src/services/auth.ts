@@ -1,3 +1,5 @@
+import apiClient from './api-client'
+import Cookies from 'js-cookie';
 import { CredentialResponse } from "@react-oauth/google";
 export interface IUser {
     username: string;
@@ -56,6 +58,20 @@ export const registerUser = async (data: IUser, file?: File) => {
       throw error;
     }
   };
+
+  export const userLogout = async () => {
+    const refreshToken = Cookies.get('refresh_token');
+  
+    if (refreshToken) {
+      await apiClient.post(`/auth/logout`, {refreshToken});
+  
+      Cookies.remove('access_token');
+      Cookies.remove('refresh_token');
+    } else {
+      throw new Error('No refresh token found');
+    }
+  };
+  
 
 
   
