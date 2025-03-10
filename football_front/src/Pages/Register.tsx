@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+
 import {
   Box,
   Button,
@@ -22,6 +23,7 @@ import { registerUser, googleSignin } from "../services/auth";
 import { registerSchema } from "../validations/validationSchemas";
 import FormInput from "../components/FormInput";
 import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
+
 
 const defaultAvatar = "/avatar.png";
 
@@ -67,7 +69,12 @@ const RegisterPage: React.FC = () => {
     try {
       const result = await registerUser(data, file || undefined);
       if (result.success) {
+        if(result.data.accessToken && result.data.user){
+          localStorage.setItem("token", result.data.accessToken);
+          localStorage.setItem("refreshToken", result.data.refreshToken);
+          localStorage.setItem("user", JSON.stringify(result.data.user));
         alert("Registration successful. Please login to continue.");
+        }
       } else {
         alert(`Error: ${result.error}`);
       }
@@ -84,8 +91,17 @@ const RegisterPage: React.FC = () => {
   console.log("Google response:", credentialResponse);
   try {
     const res = await googleSignin(credentialResponse);
-    console.log("Backend response:", res);
-    alert("Registration successful.");
+    if(res.data.accessToken && res.data.user){
+      localStorage.setItem("token", res.data.accessToken);
+      localStorage.setItem("refreshToken", res.data.refreshToken);
+      localStorage.setItem("user", JSON.stringify(res.data.user));
+      console.log("Backend response:", res);
+      alert("Registration successful.");
+    }
+    else {
+      alert(`Error: ${res.message || "Google sign-in failed"}`);
+    }
+  
   } catch (error) {
     console.error("Error during Google sign-in:", error);
     alert("Something went wrong with Google sign-in.");
