@@ -2,7 +2,8 @@ import React from "react";
 import { Container, Box, Avatar, Typography } from "@mui/material";
 import Layout from "../components/page_tamplate/Layout";
 import { useAuth } from "../contexts/AuthContext";
-
+import { string } from "yup";
+import apiClient from './apiClient';
 const ProfilePage: React.FC = () => {
   const { user } = useAuth();
 
@@ -18,12 +19,21 @@ const ProfilePage: React.FC = () => {
     );
   }
 
+  const getImageUrl = (img: string): string => {
+    console.log(img);
+    
+    if (img.startsWith("http")) {
+      return img;
+    }
+    return `http://localhost:3000${img}`;
+  }
+
   return (
     <Layout title="Profile">
       <Container maxWidth="md">
         {/* User Details Section */}
         <Box display="flex" flexDirection="column" alignItems="center" my={4}>
-          <Avatar src={user.profile_img} sx={{ width: 150, height: 150 }} />
+          <Avatar src={getImageUrl(user.profile_img)} sx={{ width: 150, height: 150 }} />
           <Typography variant="h4" mt={2}>
             {user.username}
           </Typography>

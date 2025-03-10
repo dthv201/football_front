@@ -15,7 +15,7 @@ import { Email, Lock } from "@mui/icons-material";
 import Layout from "../components/page_tamplate/Layout";
 import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
 import { googleSignin } from "../services/auth";
-// import { useAuth } from "../contexts/AuthContext";
+ import { useAuth } from "../contexts/AuthContext";
 
 // const API_URL = import.meta.env.VITE_API_URL;
 
@@ -32,6 +32,7 @@ interface LoginData {
 }
 
 const LoginPage: React.FC = () => {
+  const { setAuthInfo } = useAuth();
   const { control, handleSubmit, formState: { errors } } = useForm<LoginData>({
     resolver: yupResolver(schema),
   });
@@ -71,6 +72,7 @@ const onGoogleFailure = async () => {
       const result = await response.json();
   
       if (response.ok) {
+        setAuthInfo(result.user, result.accessToken, result.refreshToken);
         alert("Login successful!");
         setUser(result.user);
       } else {
