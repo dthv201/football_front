@@ -21,14 +21,11 @@ const ProfilePage: React.FC = () => {
 
   console.log(user.profile_img);
   const getImageUrl = (img: string): string => {
-    console.log(img);
     
     if (img.startsWith("http")) {
       return img;
     }
     const baseUrl = import.meta.env.VITE_API_URL || "http://localhost:3000";
-    console.log("Base URL is:", baseUrl);
-    console.log("Final image URL is:", `${baseUrl}${img}`);
     return `${baseUrl}${img}`;
   }
 
