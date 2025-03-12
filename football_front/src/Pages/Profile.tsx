@@ -3,7 +3,7 @@ import { Container, Box, Avatar, Typography } from "@mui/material";
 import Layout from "../components/page_tamplate/Layout";
 import { useAuth } from "../contexts/AuthContext";
 import { string } from "yup";
-import apiClient from './apiClient';
+// import apiClient from './apiClient';
 const ProfilePage: React.FC = () => {
   const { user } = useAuth();
 
@@ -19,13 +19,16 @@ const ProfilePage: React.FC = () => {
     );
   }
 
+  console.log(user.profile_img);
   const getImageUrl = (img: string): string => {
     console.log(img);
     
     if (img.startsWith("http")) {
       return img;
     }
-    const baseUrl = process.env.REACT_APP_API_URL || "http://localhost:3000";
+    const baseUrl = import.meta.env.VITE_API_URL || "http://localhost:3000";
+    console.log("Base URL is:", baseUrl);
+    console.log("Final image URL is:", `${baseUrl}${img}`);
     return `${baseUrl}${img}`;
   }
 

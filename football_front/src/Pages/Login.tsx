@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -32,17 +32,11 @@ interface LoginData {
 }
 
 const LoginPage: React.FC = () => {
-  const { setAuthInfo } = useAuth();
+  const { user,setAuthInfo } = useAuth();
   const { control, handleSubmit, formState: { errors } } = useForm<LoginData>({
     resolver: yupResolver(schema),
   });
 
-  interface User {
-    displayName: string;
-    // Add other user properties if needed
-  }
-  
-  const [user, setUser] = useState<User | null>(null);
 
 const onGoogleSuccess = async (credentialResponse: CredentialResponse) => {
   console.log("Google response:", credentialResponse);
@@ -69,11 +63,11 @@ const onGoogleFailure = async () => {
               });
   
       const result = await response.json();
-  
+      console.log("Login response:", result);
       if (response.ok) {
-        setAuthInfo(result.user, result.accessToken, result.refreshToken);
+        console.log("Login successful:", result);
+        setAuthInfo(result.data.user, result.data.accessToken, result.data.refreshToken);
         alert("Login successful!");
-        setUser(result.user);
       } else {
         alert(`Error: ${result.message}`);
       }
@@ -102,7 +96,7 @@ const onGoogleFailure = async () => {
 
           {user ? (
             <Typography variant="h5" align="center" sx={{ mt: 5, mb: 3, color: "black" }}>
-              Welcome, {user.displayName}!
+              Welcome, {user.username}!
             </Typography>
           ) : (
             
