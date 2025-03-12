@@ -25,7 +25,8 @@ const ProfilePage: React.FC = () => {
     if (img.startsWith("http")) {
       return img;
     }
-    return `http://localhost:3000${img}`;
+    const baseUrl = process.env.REACT_APP_API_URL || "http://localhost:3000";
+    return `${baseUrl}${img}`;
   }
 
   return (

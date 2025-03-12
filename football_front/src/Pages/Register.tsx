@@ -90,33 +90,22 @@ const RegisterPage: React.FC = () => {
   };
   
 
-  const onGoogleSuccess = async (credentialResponse: CredentialResponse) => {
+const onGoogleSuccess = async (credentialResponse: CredentialResponse) => {
   setLoadingGoogle(true);
   console.log("Google response:", credentialResponse);
   try {
     const res = await googleSignin(credentialResponse);
-    if(res.data.accessToken && res.data.user){
-      setAuthInfo(res.data.user, res.data.accessToken, res.data.refreshToken);
-      console.log("User:", localStorage.getItem("user"));
-      console.log("Access Token:", localStorage.getItem("accessToken"));
-      console.log("Refresh Token:", localStorage.getItem("refreshToken"));
-      console.log("Backend response:", res);
-      alert("Registration successful.");
-    }
-    else {
-      alert(`Error: ${res.message || "Google sign-in failed"}`);
-    }
-  
+    setAuthInfo(res.user, res.accessToken, res.refreshToken);
+    alert("Register successful.");
   } catch (error) {
-    console.error("Error during Google sign-in:", error);
+    console.error("Error during Google Registretion:", error);
     alert("Something went wrong with Google sign-in.");
   }
   setLoadingGoogle(false);
 };
 
 const onGoogleFailure = async () => {
-  console.log("Google login failed.");
-  setLoadingGoogle(false);
+  console.log("Google register failed.");
 };
 
   return (

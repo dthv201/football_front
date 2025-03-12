@@ -50,7 +50,6 @@ const onGoogleSuccess = async (credentialResponse: CredentialResponse) => {
     const res = await googleSignin(credentialResponse);
     console.log("Backend response:", res);
     alert("Login successful.");
-    // Optionally handle tokens or navigation based on response
   } catch (error) {
     console.error("Error during Google sign-in:", error);
     alert("Something went wrong with Google sign-in.");
