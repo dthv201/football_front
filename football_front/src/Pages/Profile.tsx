@@ -2,7 +2,8 @@ import React from "react";
 import { Container, Box, Avatar, Typography } from "@mui/material";
 import Layout from "../components/page_tamplate/Layout";
 import { useAuth } from "../contexts/AuthContext";
-import { string } from "yup";
+import { getImageUrl } from "../utils/getImageUrl"; 
+
 // import apiClient from './apiClient';
 const ProfilePage: React.FC = () => {
   const { user } = useAuth();
@@ -19,15 +20,7 @@ const ProfilePage: React.FC = () => {
     );
   }
 
-  console.log(user.profile_img);
-  const getImageUrl = (img: string): string => {
-    
-    if (img.startsWith("http")) {
-      return img;
-    }
-    const baseUrl = import.meta.env.VITE_API_URL || "http://localhost:3000";
-    return `${baseUrl}${img}`;
-  }
+
 
   return (
     <Layout title="Profile">

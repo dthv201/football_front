@@ -4,6 +4,7 @@ import WelcomePage from "./Pages/Welcome";
 import RegisterPage from "./Pages/Register";
 import LoginPage from "./Pages/Login";
 import Profile from "./Pages/Profile";
+import UpdateInfo from "./Pages/UpdateUserInfo";
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
          <Route path="/register" element={<RegisterPage />} />
        <Route path="/login" element={<LoginPage />} /> 
        { <Route path="/profile" element={<Profile />} /> }
+       { <Route path="/update" element={<UpdateInfo />} /> }
       </Routes>
     </Router>
   );
