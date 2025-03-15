@@ -16,6 +16,7 @@ interface User {
 interface AuthContextType {
   user: User | undefined;
   accessToken: string | undefined;
+  isLoading: boolean;
   setAuthInfo: (user: User, accessToken: string, refreshToken: string) => void;
   logout: () => void;
 }
@@ -29,7 +30,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 }) => {
   const [accessToken, setAccessToken] = useLocalStorage<string>("accessToken");
 
-  const { data: user } = useQuery<User | undefined>({
+  const { data: user, isLoading  } = useQuery<User | undefined>({
     queryKey: ["userFetching"],
     queryFn: async () => {
       const response = await fetch("/auth/user", {
@@ -66,7 +67,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, accessToken, setAuthInfo, logout }}>
+    <AuthContext.Provider value={{ user, accessToken, isLoading, setAuthInfo, logout }}>
       {children}
     </AuthContext.Provider>
   );
