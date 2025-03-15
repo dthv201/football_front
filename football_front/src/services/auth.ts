@@ -58,4 +58,29 @@ export const registerUser = async (data: IUser, file?: File) => {
   };
 
 
+  export const logout = async () => {
+    try {
+      const refreshToken = localStorage.getItem("refreshToken");
+      if (!refreshToken) throw new Error("No refresh token found");
+  
+      const response = await fetch("http://localhost:3000/auth/logout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ refreshToken }),
+      });
+  
+      if (!response.ok) {
+        throw new Error("Logout failed");
+      }
+  
+      localStorage.removeItem("refreshToken"); 
+      return await response.json();
+    } catch (error) {
+      console.error("Logout error:", error);
+      throw error;
+    }
+  };
+
   

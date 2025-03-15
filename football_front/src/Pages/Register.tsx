@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { Controller } from "react-hook-form";
+
 import {
   Box,
   Button,
@@ -22,6 +24,7 @@ import { registerUser, googleSignin } from "../services/auth";
 import { registerSchema } from "../validations/validationSchemas";
 import FormInput from "../components/FormInput";
 import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
+import { useAuth } from "../contexts/AuthContext";
 
 const defaultAvatar = "/avatar.png";
 
@@ -35,6 +38,7 @@ interface FormData {
 }
 
 const RegisterPage: React.FC = () => {
+  const { setAuthInfo } = useAuth();
   const {
     control,
     handleSubmit,
@@ -49,7 +53,7 @@ const RegisterPage: React.FC = () => {
   const [preview, setPreview] = useState<string>(defaultAvatar);
   const [loadingRegister, setLoadingRegister] = useState<boolean>(false);
   const [loadingGoogle, setLoadingGoogle] = useState<boolean>(false);
-  
+ 
 
   const imgFiles = watch("img");
 
@@ -64,10 +68,17 @@ const RegisterPage: React.FC = () => {
   const onSubmit = async (data: FormData) => {
     setLoadingRegister(true);
     console.log("Registration Data:", { ...data, img: file });
+    
     try {
       const result = await registerUser(data, file || undefined);
       if (result.success) {
-        alert("Registration successful. Please login to continue.");
+        console.log("Before setting auth info");
+          setAuthInfo(result.data.user, result.data.accessToken, result.data.refreshToken);
+          console.log("User:", localStorage.getItem("user"));
+          console.log("Access Token:", localStorage.getItem("accessToken"));
+         console.log("Refresh Token:", localStorage.getItem("refreshToken"));
+        alert("Registration successful.");
+        
       } else {
         alert(`Error: ${result.error}`);
       }
@@ -79,23 +90,22 @@ const RegisterPage: React.FC = () => {
   };
   
 
-  const onGoogleSuccess = async (credentialResponse: CredentialResponse) => {
+const onGoogleSuccess = async (credentialResponse: CredentialResponse) => {
   setLoadingGoogle(true);
   console.log("Google response:", credentialResponse);
   try {
     const res = await googleSignin(credentialResponse);
-    console.log("Backend response:", res);
-    alert("Registration successful.");
+    setAuthInfo(res.user, res.accessToken, res.refreshToken);
+    alert("Register successful.");
   } catch (error) {
-    console.error("Error during Google sign-in:", error);
+    console.error("Error during Google Registretion:", error);
     alert("Something went wrong with Google sign-in.");
   }
   setLoadingGoogle(false);
 };
 
 const onGoogleFailure = async () => {
-  console.log("Google login failed.");
-  setLoadingGoogle(false);
+  console.log("Google register failed.");
 };
 
   return (
@@ -171,16 +181,23 @@ const onGoogleFailure = async () => {
                 error={errors.confirmPassword?.message}
               />
 
-              <FormControl component="fieldset">
-                <FormLabel component="legend" sx={{ color: "black" }}>
-                  Skill Level
-                </FormLabel>
-                <RadioGroup defaultValue="Beginner" row {...register("skillLevel")} sx={{ color: "black" }}>
-                  <FormControlLabel value="Beginner" control={<Radio />} label="Beginner" />
-                  <FormControlLabel value="Intermediate" control={<Radio />} label="Intermediate" />
-                  <FormControlLabel value="Advanced" control={<Radio />} label="Advanced" />
-                </RadioGroup>
-              </FormControl>
+                <Controller
+                  control={control}
+                  name="skillLevel"
+                  defaultValue="Beginner"
+                  render={({ field }) => (
+                    <FormControl component="fieldset">
+                      <FormLabel component="legend" sx={{ color: "black" }}>
+                        Skill Level
+                      </FormLabel>
+                      <RadioGroup row {...field} sx={{ color: "black" }}>
+                        <FormControlLabel value="Beginner" control={<Radio />} label="Beginner" />
+                        <FormControlLabel value="Intermediate" control={<Radio />} label="Intermediate" />
+                        <FormControlLabel value="Advanced" control={<Radio />} label="Advanced" />
+                      </RadioGroup>
+                    </FormControl>
+                  )}
+                />
 
               <Box sx={{ display: "flex", gap: 2 }}>
               <Box sx={{ flex: 1 }}>
