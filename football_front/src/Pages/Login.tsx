@@ -66,7 +66,7 @@ const onGoogleFailure = async () => {
       console.log("Login response:", result);
       if (response.ok) {
         console.log("Login successful:", result);
-        setAuthInfo(result.data.user, result.data.accessToken, result.data.refreshToken);
+        setAuthInfo(result.user, result.accessToken, result.refreshToken);
         alert("Login successful!");
       } else {
         alert(`Error: ${result.message}`);
@@ -136,7 +136,7 @@ const onGoogleFailure = async () => {
                   name="password"
                   control={control}
                   defaultValue=""
-                  render={({ field }) => (
+                  render={ ({ field }) => (
                     <TextField
                       {...field}
                       label="Password"
@@ -178,7 +178,8 @@ const onGoogleFailure = async () => {
         </Box>
       </Container>
     </Layout>
-  );
-};
+  
+        );
+      }
 
 export default LoginPage;

@@ -28,6 +28,7 @@ interface UpdateFormData {
 }
 
 const UpdateUserInfo: React.FC = () => {
+  const { setAuthInfo } = useAuth();
   const { user, accessToken } = useAuth();
   const [loading, setLoading] = useState<boolean>(false);
   const [preview, setPreview] = useState<string>(
@@ -78,26 +79,27 @@ const UpdateUserInfo: React.FC = () => {
       formData.append("profile_img", data.profile_img[0]);
     }
 
-    try {
-      const response = await fetch(`/auth/users/${user?._id}`, {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${accessToken}`, 
-        },
-        body: formData,
-      });
-      console.log("response", response);
-      const result = await response.json();
-      if (response.ok) {
-        alert("Profile updated successfully");
+    // try {
+    //   const response = await fetch(`/auth/users/${user?._id}`, {
+    //     method: "PUT",
+    //     headers: {
+    //       Authorization: `Bearer ${accessToken}`, 
+    //     },
+    //     body: formData,
+    //   });
+    //   console.log("response", response);
+    //   const result = await response.json();
+    //   if (response.ok) {
+    //     setAuthInfo(result.user, result.accessToken, result.refreshToken);
+    //     alert("Profile updated successfully");
       
-      } else {
-        alert(result.error || "Update failed");
-      }
-    } catch (error) {
-      console.error(error);
-      alert("Server error");
-    }
+    //   } else {
+    //     alert(result.error || "Update failed");
+    //   }
+    // } catch (error) {
+    //   console.error(error);
+    //   alert("Server error");
+    // }
     setLoading(false);
   };
 
@@ -130,12 +132,19 @@ const UpdateUserInfo: React.FC = () => {
               {...register("profile_img")}
               style={{ display: "none" }}
             />
+            <Typography variant="subtitle1" color="textSecondary">
+                User name: {user.username}
+              </Typography>
+              <Typography variant="subtitle1" color="textSecondary">
+                Email: {user.email}
+              </Typography>
             <TextField
               {...register("username")}
               label="Username"
               variant="outlined"
               fullWidth
               margin="normal"
+              InputLabelProps={{ shrink: true }}
               placeholder={user.username} 
             />
             <Controller
@@ -153,6 +162,7 @@ const UpdateUserInfo: React.FC = () => {
                 </FormControl>
               )}
             />
+         
             <Button
               type="submit"
               variant="contained"
