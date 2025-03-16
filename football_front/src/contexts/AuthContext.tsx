@@ -1,4 +1,9 @@
-import React, { createContext, useState, useContext, ReactNode, useEffect } from "react";
+import React, {
+  createContext, useContext,
+  ReactNode, useCallback
+} from "react";
+import { useLocalStorage } from "@uidotdev/usehooks";
+import { useQuery } from "@tanstack/react-query";
 
 interface User {
   _id: string;
@@ -9,46 +14,60 @@ interface User {
 }
 
 interface AuthContextType {
-  user: User | null;
-  accessToken: string | null;
+  user: User | undefined;
+  accessToken: string | undefined;
+  isLoading: boolean;
   setAuthInfo: (user: User, accessToken: string, refreshToken: string) => void;
   logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [accessToken, setAccessToken] = useState<string | null>(null);
 
-  // Re-hydrate context from localStorage on mount
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    const storedAccessToken = localStorage.getItem("accessToken");
-    if (storedUser && storedAccessToken) {
-      setUser(JSON.parse(storedUser));
-      setAccessToken(storedAccessToken);
-    }
-  }, []);
 
-  const setAuthInfo = (user: User, accessToken: string, refreshToken: string) => {
-    setUser(user);
+export const AuthProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
+  const [accessToken, setAccessToken] = useLocalStorage<string>("accessToken");
+
+  const { data: user, isLoading  } = useQuery<User | undefined>({
+    queryKey: ["userFetching"],
+    queryFn: async () => {
+      const response = await fetch("/auth/user", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      if (!response.ok) {
+        throw new Error("Failed to fetch user data");
+      }
+      return await response.json();
+    },
+
+  });
+  
+
+
+  const setAuthInfo = (
+    user: User,
+    accessToken: string,
+    refreshToken: string
+  ) => {
     setAccessToken(accessToken);
-    localStorage.setItem("accessToken", accessToken);
     localStorage.setItem("refreshToken", refreshToken);
-    localStorage.setItem("user", JSON.stringify(user));
+    console.log("User:", JSON.stringify(user));
+    
   };
 
-  const logout = () => {
-    setUser(null);
-    setAccessToken(null);
+  const logout = useCallback(() => {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
-    localStorage.removeItem("user");
-  };
+    // localStorage.removeItem("user");
+  }, []);
 
   return (
-    <AuthContext.Provider value={{ user, accessToken, setAuthInfo, logout }}>
+    <AuthContext.Provider value={{ user, accessToken, isLoading, setAuthInfo, logout }}>
       {children}
     </AuthContext.Provider>
   );
