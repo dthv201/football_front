@@ -73,10 +73,7 @@ const RegisterPage: React.FC = () => {
       const result = await registerUser(data, file || undefined);
       if (result.success) {
         console.log("Before setting auth info");
-          setAuthInfo(result.data.user, result.data.accessToken, result.data.refreshToken);
-          console.log("User:", localStorage.getItem("user"));
-          console.log("Access Token:", localStorage.getItem("accessToken"));
-         console.log("Refresh Token:", localStorage.getItem("refreshToken"));
+        setAuthInfo(result.data.user, result.data.accessToken, result.data.refreshToken);
         alert("Registration successful.");
         
       } else {

@@ -63,7 +63,7 @@ const ProfilePage: React.FC = () => {
                                 </Typography>
                             )}
                             <Box sx={{ display: "flex", justifyContent: "center", gap: 1, mt: 2 }}>
-                                <Button variant="contained" color="primary" onClick={() => navigate("/")}>
+                                <Button variant="contained" color="primary" onClick={() => navigate("/update-profile")}>
                                     Edit Profile
                                 </Button>
                                 <Button variant="contained" color="secondary" onClick={handleLogout}>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -14,8 +14,10 @@ import {
 import { Email, Lock } from "@mui/icons-material";
 import Layout from "../components/page_tamplate/Layout";
 import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
-import { googleSignin } from "../services/auth";
+import { googleSignin, login } from "../services/auth";
  import { useAuth } from "../contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
+import BluePinkCircularProgress from "../components/CircularWait";
 
 // const API_URL = import.meta.env.VITE_API_URL;
 
@@ -32,7 +34,9 @@ interface LoginData {
 }
 
 const LoginPage: React.FC = () => {
-  const { user,setAuthInfo } = useAuth();
+  const {setAuthInfo } = useAuth();
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   const { control, handleSubmit, formState: { errors } } = useForm<LoginData>({
     resolver: yupResolver(schema),
   });
@@ -44,6 +48,7 @@ const onGoogleSuccess = async (credentialResponse: CredentialResponse) => {
     const res = await googleSignin(credentialResponse);
     console.log("Backend response:", res);
     alert("Login successful.");
+    navigate('/profile');
   } catch (error) {
     console.error("Error during Google sign-in:", error);
     alert("Something went wrong with Google sign-in.");
@@ -54,28 +59,27 @@ const onGoogleFailure = async () => {
   console.log("Google login failed.");
 };
 
-  const onSubmit = async (data: LoginData) => {
-    try {
-      const response = await fetch(`/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-              });
-  
-      const result = await response.json();
-      console.log("Login response:", result);
-      if (response.ok) {
-        console.log("Login successful:", result);
-        setAuthInfo(result.user, result.accessToken, result.refreshToken);
-        alert("Login successful!");
-      } else {
-        alert(`Error: ${result.message}`);
-      }
-    } catch (error) {
-      console.error("Error logging in:", error);
-      alert("Something went wrong. Please try again.");
-    }
-  };
+const onSubmit = async (data: LoginData) => {
+  setLoading(true);
+  try {
+    const result = await login(data); // Call the login service function
+    console.log("Login successful:", result);
+    // Save tokens and user info in your AuthContext
+    setAuthInfo(
+      { ...result.user, skillLevel: result.user.skillLevel || "" },
+      result.accessToken,
+      result.refreshToken
+    );
+    alert("Login successful!");
+    navigate("/profile");
+  } catch (error) {
+    console.error("Error logging in:", error);
+    const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
+    alert(`Error: ${errorMessage}`);
+  } finally {
+    setLoading(false);
+  }
+};
   
 
   return (
@@ -91,14 +95,7 @@ const onGoogleFailure = async () => {
       >
 
         <Box sx={{ p: 4, bgcolor: "white", borderRadius: 2, boxShadow: 3, width: "100%", maxWidth: 400, textAlign: "center" }}>
-     
-       
-
-          {user ? (
-            <Typography variant="h5" align="center" sx={{ mt: 5, mb: 3, color: "black" }}>
-              Welcome, {user.username}!
-            </Typography>
-          ) : (
+          {
             
             <form onSubmit={handleSubmit(onSubmit)}>
               <Stack spacing={2}>
@@ -131,7 +128,6 @@ const onGoogleFailure = async () => {
                   )}
                 />
 
-                {/* Password Field */}
                 <Controller
                   name="password"
                   control={control}
@@ -155,25 +151,23 @@ const onGoogleFailure = async () => {
                     />
                   )}
                 />
-
-                {/* Login Button */}
-              
-
+                
                 <Box sx={{ display: "flex", gap: 2 }}>
                 <GoogleLogin  onSuccess={onGoogleSuccess} onError={onGoogleFailure}/>
                 <Button
                   type="submit"
                   variant="contained"
                   fullWidth
+                  disabled={loading}
                   sx={{ bgcolor: "#4DB6E5", color: "white", "&:hover": { bgcolor: "#3EA3D3" } }}
                 >
-                  Login
+                  {loading ? <BluePinkCircularProgress size={24} /> : "Login"}
                 </Button>
                 </Box>
 
               </Stack>
             </form>
-          )}
+          }
 
         </Box>
       </Container>

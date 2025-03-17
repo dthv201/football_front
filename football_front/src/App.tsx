@@ -14,7 +14,7 @@ function App() {
          <Route path="/register" element={<RegisterPage />} />
        <Route path="/login" element={<LoginPage />} /> 
        { <Route path="/profile" element={<Profile />} /> }
-       { <Route path="/update" element={<UpdateInfo />} /> }
+       { <Route path="/update-profile" element={<UpdateInfo />} /> }
       </Routes>
     </Router>
   );

@@ -1,4 +1,5 @@
 import { CredentialResponse } from "@react-oauth/google";
+import { User } from "../types/User";
 export interface IUser {
     username: string;
     email: string;
@@ -63,7 +64,7 @@ export const registerUser = async (data: IUser, file?: File) => {
       const refreshToken = localStorage.getItem("refreshToken");
       if (!refreshToken) throw new Error("No refresh token found");
   
-      const response = await fetch("http://localhost:3000/auth/logout", {
+      const response = await fetch("/auth/logout", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -82,5 +83,36 @@ export const registerUser = async (data: IUser, file?: File) => {
       throw error;
     }
   };
+
+  // src/services/loginService.ts
+
+export interface LoginData {
+  email: string;
+  password: string;
+}
+
+export interface LoginResponse {
+  user: User; 
+  accessToken: string;
+  refreshToken: string;
+  message?: string;
+}
+
+export async function login(data: LoginData): Promise<LoginResponse> {
+  const response = await fetch(`/auth/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message || "Login failed");
+  }
+  return result;
+}
+
+
 
   
