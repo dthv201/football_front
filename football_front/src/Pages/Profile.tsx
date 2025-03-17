@@ -7,8 +7,9 @@ import { logout } from "../services/auth";
 import { getUserPosts } from "../services/postService";
 import { Post } from "../types/Post";
 import Layout from "../components/page_tamplate/Layout";
-import { Container, Typography, Box, Button, Card, CardContent, CircularProgress, CardActions } from "@mui/material";
+import { Container, Typography, Box, Button, CircularProgress, } from "@mui/material";
 import Grid from "@mui/material/Grid2";
+import UserPosts from "../components/posts/Posts";
 
 const ProfilePage: React.FC = () => {
     const authContext = useAuth();
@@ -63,7 +64,7 @@ const ProfilePage: React.FC = () => {
                                 </Typography>
                             )}
                             <Box sx={{ display: "flex", justifyContent: "center", gap: 1, mt: 2 }}>
-                                <Button variant="contained" color="primary" onClick={() => navigate("/")}>
+                                <Button variant="contained" color="primary" onClick={() => navigate("/update")}>
                                     Edit Profile
                                 </Button>
                                 <Button variant="contained" color="secondary" onClick={handleLogout}>
@@ -74,36 +75,20 @@ const ProfilePage: React.FC = () => {
                     </Grid>
                     <Grid size={8}>
                         <Container>
-                        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
+                            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
                                 <Typography variant="h5">My Posts</Typography>
-                                <Button variant="contained" color="primary" onClick={() => navigate("/create-post")}>
+                                <Button variant="contained" color="primary" onClick={() => navigate("/post/create")}>
                                     + Create Post
                                 </Button>
                             </Box>
                             {loading ? (
                                 <CircularProgress />
                             ) : posts.length > 0 ? (
-                                posts.map((post) => (
-                                    <Card key={post._id} sx={{ marginBottom: 2, boxShadow: 3, borderRadius: 2 }}>
-                                        <CardContent>
-                                            <img src={post.img} alt={post.title} style={{ width: '100%', borderRadius: '8px' }} />
-                                            <Typography variant="h6" gutterBottom>{post.title}</Typography>
-                                            <Typography variant="body2" color="textSecondary" paragraph>{post.content}</Typography>
-                                            <Typography variant="subtitle2" color="text.secondary">Type: {post.type}</Typography>
-                                            <Typography variant="subtitle2" color="text.secondary">Category: {post.filed}</Typography>
-                                            <Typography variant="body2">Likes: {post.likes_number} | Comments: {post.comments_number}</Typography>
-                                            {/* <Typography variant="body2">Participants: {post.participants.map(p => p.name).join(", ")}</Typography> */}
-                                            <Typography variant="body2">Participants:</Typography>
-                                        </CardContent>
-                                        <CardActions sx={{ display: "flex", justifyContent: "space-between" }}>
-                                            <Button variant="outlined" color="primary" onClick={() => navigate(`/edit-post/${post._id}`)}>Edit</Button>
-                                            {/* <Button variant="outlined" color="error" onClick={() => handleDeletePost(post._id)}>Delete</Button> */}
-                                        </CardActions>
-                                    </Card>
-                                ))
-                            ) : (
-                                <Typography>No posts found</Typography>
-                            )}
+                                <UserPosts posts={posts} />)
+                                :
+                                (
+                                    <Typography>No posts found</Typography>
+                                )}
                         </Container>
                     </Grid>
                 </Grid>

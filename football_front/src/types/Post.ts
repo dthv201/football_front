@@ -2,13 +2,13 @@ import { User } from './User';
 
 export interface Post {
     _id: string;
-    filed?: string; 
-    type?: string; 
-    img?: string; 
     owner: string; 
-    participants?: User[]; 
+    title: string;
     content: string; 
+    img?: string; 
+    date: Date;
+    location: string;
+    participants?: User[]; 
     likes_number?: number; 
     comments_number?: number;
-    title: string;
   }
