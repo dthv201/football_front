@@ -1,4 +1,5 @@
 import { CredentialResponse } from "@react-oauth/google";
+import { User } from "../types/User";
 export interface IUser {
     username: string;
     email: string;
@@ -82,5 +83,34 @@ export const registerUser = async (data: IUser, file?: File) => {
       throw error;
     }
   };
+
+  export interface LoginData {
+    email: string;
+    password: string;
+  }
+  
+  export interface LoginResponse {
+    user: User; 
+    accessToken: string;
+    refreshToken: string;
+    message?: string;
+  }
+  
+  export const loginUser = async (data: LoginData): Promise<LoginResponse> => {
+    const response = await fetch(`/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+  
+    const result = await response.json();
+  
+    if (!response.ok) {
+      throw new Error(result.message || "Login failed");
+    }
+    
+    return result;
+  };
+   
 
   

@@ -24,6 +24,7 @@ import { getImageUrl } from "../utils/getImageUrl";
 
 
 
+
 interface UpdateFormData {
   username: string;
   skillLevel: string;
@@ -31,6 +32,7 @@ interface UpdateFormData {
 }
 
 const UpdateUserInfo: React.FC = () => {
+ 
   const { user,isLoading, accessToken } = useAuth();
   const [loading, setLoading] = useState<boolean>(false);
   const [preview, setPreview] = useState<string>(
@@ -48,7 +50,7 @@ const UpdateUserInfo: React.FC = () => {
 
   useEffect(() => {
     if (user) {
-      // Update the form values when user data is available
+
       reset({
         username: user.username,
         skillLevel: user.skillLevel,
@@ -64,12 +66,10 @@ const UpdateUserInfo: React.FC = () => {
     }
   }, [imgFiles]);
 
+
   const onSubmit = async (data: UpdateFormData) => {
     setLoading(true);
     console.log("Access Token:", accessToken);
-
-
-    // Build FormData to support file upload
     const formData = new FormData();
     if(user?.username != data.username){
     formData.append("username", data.username);
@@ -94,11 +94,16 @@ const UpdateUserInfo: React.FC = () => {
       return;
     }
     console.log("change successful:", response);
+    
     alert("changes saved",);
+    
     setLoading(false);
+     
   };
 
 
+  
+  
 
 
   return (
