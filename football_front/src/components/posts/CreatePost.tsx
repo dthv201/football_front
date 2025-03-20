@@ -64,7 +64,7 @@ const CreatePost: React.FC = () => {
       img: preview ? preview : undefined
     };
     
-    const response = await fetch("http://localhost:3000/posts", {
+    const response = await fetch("http://localhost:3000/comments", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

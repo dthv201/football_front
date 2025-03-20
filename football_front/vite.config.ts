@@ -11,6 +11,17 @@ export default defineConfig({
         changeOrigin: true,
         secure: false,
       },
+      "/comments": {
+        target: "http://localhost:3000", 
+        changeOrigin: true,
+        secure: false,
+      },
+      "/posts": {
+        target: "http://localhost:3000", 
+        changeOrigin: true,
+        secure: false,
+      },
+      
     },
   },
 })
