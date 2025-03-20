@@ -53,7 +53,7 @@ const LoginPage: React.FC = () => {
         res.accessToken,
         res.refreshToken
       );
-      navigate("/profile"); // Redirect to profile page after success
+      navigate("/profile");
     } catch (error) {
       console.error("Error during Google sign-in:", error);
       alert("Something went wrong with Google sign-in.");

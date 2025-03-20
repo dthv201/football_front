@@ -9,7 +9,7 @@ import { Post } from "../types/Post";
 import Layout from "../components/page_tamplate/Layout";
 import { Container, Typography, Box, Button, CircularProgress, } from "@mui/material";
 import Grid from "@mui/material/Grid2";
-import UserPosts from "../components/posts/Posts";
+import UserPosts from "../components/posts/posts";
 
 const ProfilePage: React.FC = () => {
     const authContext = useAuth();
