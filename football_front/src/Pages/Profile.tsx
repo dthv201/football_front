@@ -9,7 +9,8 @@ import { Post } from "../types/Post";
 import Layout from "../components/page_tamplate/Layout";
 import { Container, Typography, Box, Button, CircularProgress, } from "@mui/material";
 import Grid from "@mui/material/Grid2";
-import UserPosts from "../components/posts/Posts";
+import UserPosts from "../components/posts/posts";
+
 
 const ProfilePage: React.FC = () => {
     const authContext = useAuth();
@@ -25,6 +26,7 @@ const ProfilePage: React.FC = () => {
             setLoading(true);
             const fetchedPosts = await getUserPosts(accessToken, user._id);
             setPosts(fetchedPosts);
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (e) {
             toast.error("Failed to load posts");
         } finally {

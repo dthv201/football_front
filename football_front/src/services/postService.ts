@@ -3,8 +3,23 @@ import { Post } from "../types/Post";
 const API_URL = "http://localhost:3000/posts/";
 
 export const getUserPosts = async (token: string, userId: string): Promise<Post[]> => {
-    console.log("getUserPosts");
   const response = await fetch(`${API_URL}?owner=${userId}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch user posts");
+  }
+
+  return response.json();
+};
+
+export const getAllPosts = async (token: string): Promise<Post[]> => {
+  const response = await fetch(`${API_URL}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
