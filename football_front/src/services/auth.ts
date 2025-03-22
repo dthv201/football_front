@@ -80,7 +80,7 @@ export const registerUser = async (data: IUser, file?: File) => {
     }
   
     try {
-      const response = await fetch("/auth/google", {
+      const response = await fetch(`${API_URL}/auth/google`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
