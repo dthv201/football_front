@@ -57,7 +57,7 @@ const UserPosts: React.FC = () => {
       try {
         await deletePost(postId);
         toast.success("Post deleted successfully");
-        await fetchPosts(); // רענון הפוסטים לאחר מחיקה
+        await fetchPosts();
       } catch (error) {
         toast.error(`Failed to load posts: ${error}`);
       }
