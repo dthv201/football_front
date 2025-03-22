@@ -22,7 +22,7 @@ const createPost = async (newPost: PostFormData) => {
 };
 
 const updatePost = async (postId: string, editedPost: PostFormData) => {
-  const response = await axiosInstance.put<Post>(`/$posts/${postId}`, editedPost);
+  const response = await axiosInstance.put<Post>(`/posts/${postId}`, editedPost);
 
   return response.data;
 };
