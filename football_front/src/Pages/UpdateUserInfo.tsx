@@ -23,6 +23,7 @@ import { getImageUrl } from "../utils/getImageUrl";
 import { updateUser } from "../services/userService";
 import { useUserContext } from "../contexts/UserContext";
 
+
 interface UpdateFormData {
   username: string;
   skillLevel: string;
@@ -31,6 +32,7 @@ interface UpdateFormData {
 
 
 const UpdateUserInfo: React.FC = () => {
+
   const { user } = useUserContext();
   const [isLoading, setLoading] = useState<boolean>(false);
   const [preview, setPreview] = useState<string>(
@@ -48,7 +50,7 @@ const UpdateUserInfo: React.FC = () => {
 
   useEffect(() => {
     if (user) {
-      // Update the form values when user data is available
+
       reset({
         username: user.username,
         skillLevel: user.skillLevel,
@@ -64,8 +66,10 @@ const UpdateUserInfo: React.FC = () => {
     }
   }, [imgFiles]);
 
+
   const onSubmit = async (data: UpdateFormData) => {
     setLoading(true);
+
 
     // Build FormData to support file upload
     const formData = new FormData();
@@ -79,14 +83,14 @@ const UpdateUserInfo: React.FC = () => {
       formData.append("profile_img", data.profile_img[0]);
     }
 
+
     if(user)
       await updateUser(user._id, formData); 
     alert("changes saved",);
+    
     setLoading(false);
+     
   };
-
-
-
 
   return (
     <Layout title="Update Profile">

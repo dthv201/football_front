@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -9,58 +9,79 @@ import {
   TextField,
   Typography,
   InputAdornment,
-  Stack
+  Stack,
+  CircularProgress,
 } from "@mui/material";
 import { Email, Lock } from "@mui/icons-material";
 import Layout from "../components/page_tamplate/Layout";
 import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
+
 import { googleSignin, userLogin } from "../services/auth";
  import { useUserContext } from "../contexts/UserContext";
 import { LoginData } from "../types/User";
+import { useNavigate } from "react-router-dom";
 
- 
-// Validation schema
+// Validation schema remains the same
 const schema = yup.object().shape({
   email: yup.string().email("Invalid email").required("Email is required"),
-  password: yup.string().min(6, "Password must be at least 6 characters").required("Password is required"),
+  password: yup
+    .string()
+    .min(6, "Password must be at least 6 characters")
+    .required("Password is required"),
 });
-
-
 
 const LoginPage: React.FC = () => {
   const {user, setUser} = useUserContext();
-
-  const { control, handleSubmit, formState: { errors } } = useForm<LoginData>({
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginData>({
     resolver: yupResolver(schema),
   });
 
-
-const onGoogleSuccess = async (credentialResponse: CredentialResponse) => {
-  console.log("Google response:", credentialResponse);
-  try {
-    const res = await googleSignin(credentialResponse);
-    console.log("Backend response:", res);
-    alert("Login successful.");
-  } catch (error) {
-    console.error("Error during Google sign-in:", error);
-    alert("Something went wrong with Google sign-in.");
-  }
-};
-
-const onGoogleFailure = async () => {
-  console.log("Google login failed.");
-};
-
-  const onSubmit = async (data: LoginData) => {
+  const onGoogleSuccess = async (credentialResponse: CredentialResponse) => {
+    console.log("Google response:", credentialResponse);
     try {
-      const user = await userLogin(data);
-      setUser(user);
-      alert("Login successful!");
-    } catch  {
-      alert("Something went wrong. Please try again.");
+      setLoading(true);
+      const res = await googleSignin(credentialResponse);
+      console.log("Backend response:", res);
+      setAuthInfo(
+        { ...res.user, skillLevel: res.user.skillLevel || "Beginner" },
+        res.accessToken,
+        res.refreshToken
+      );
+      navigate("/profile");
+    } catch (error) {
+      console.error("Error during Google sign-in:", error);
+      alert("Something went wrong with Google sign-in.");
+    } finally {
+      setLoading(false);
     }
   };
-  
+
+  const onGoogleFailure = async () => {
+    console.log("Google login failed.");
+  };
+
+  const onSubmit = async (data: LoginData) => {
+    
+    try {
+      setLoading(true);
+      const user = await userLogin(data);
+      setUser(user);
+      console.log("Login response:", user);
+      navigate("/profile"); 
+    } catch  {
+      alert("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+      
+    }
+  };
 
   return (
     <Layout title="Login">
@@ -73,23 +94,35 @@ const onGoogleFailure = async () => {
           minHeight: "90vh",
         }}
       >
-
-        <Box sx={{ p: 4, bgcolor: "white", borderRadius: 2, boxShadow: 3, width: "100%", maxWidth: 400, textAlign: "center" }}>
-     
-       
-
+        <Box
+          sx={{
+            p: 4,
+            bgcolor: "white",
+            borderRadius: 2,
+            boxShadow: 3,
+            width: "100%",
+            maxWidth: 400,
+            textAlign: "center",
+          }}
+        >
           {user ? (
-            <Typography variant="h5" align="center" sx={{ mt: 5, mb: 3, color: "black" }}>
+            <Typography
+              variant="h5"
+              align="center"
+              sx={{ mt: 5, mb: 3, color: "black" }}
+            >
               Welcome, {user.username}!
             </Typography>
           ) : (
-            
             <form onSubmit={handleSubmit(onSubmit)}>
               <Stack spacing={2}>
-
-              <Typography variant="h4" align="center" sx={{ mt: 5, mb: 3, color: "black" }}>
-                Login to find a game match!
-              </Typography>
+                <Typography
+                  variant="h4"
+                  align="center"
+                  sx={{ mt: 5, mb: 3, color: "black" }}
+                >
+                  Login to find a game match!
+                </Typography>
 
                 {/* Email Field */}
                 <Controller
@@ -120,7 +153,7 @@ const onGoogleFailure = async () => {
                   name="password"
                   control={control}
                   defaultValue=""
-                  render={ ({ field }) => (
+                  render={({ field }) => (
                     <TextField
                       {...field}
                       label="Password"
@@ -140,30 +173,37 @@ const onGoogleFailure = async () => {
                   )}
                 />
 
-                {/* Login Button */}
-              
-
+                {/* Login and Google Login Buttons */}
                 <Box sx={{ display: "flex", gap: 2 }}>
-                <GoogleLogin  onSuccess={onGoogleSuccess} onError={onGoogleFailure}/>
-                <Button
-                  type="submit"
-                  variant="contained"
-                  fullWidth
-                  sx={{ bgcolor: "#4DB6E5", color: "white", "&:hover": { bgcolor: "#3EA3D3" } }}
-                >
-                  Login
-                </Button>
+                  <GoogleLogin
+                    onSuccess={onGoogleSuccess}
+                    onError={onGoogleFailure}
+                  />
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    fullWidth
+                    sx={{
+                      bgcolor: "#4DB6E5",
+                      color: "white",
+                      "&:hover": { bgcolor: "#3EA3D3" },
+                    }}
+                    disabled={loading}
+                  >
+                    {loading ? (
+                      <CircularProgress size={24} color="inherit" />
+                    ) : (
+                      "Login"
+                    )}
+                  </Button>
                 </Box>
-
               </Stack>
             </form>
           )}
-
         </Box>
       </Container>
     </Layout>
-  
-        );
-      }
+  );
+};
 
 export default LoginPage;

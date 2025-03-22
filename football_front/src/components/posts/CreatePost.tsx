@@ -52,8 +52,8 @@ const CreatePost: React.FC = () => {
     setLoading(true);
     
     try {
-      await createPost(data);
 
+      await createPost(data);
       alert("Post created successfully!");
       reset();
       setPreview(null);

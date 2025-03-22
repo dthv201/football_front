@@ -11,7 +11,6 @@ import { Container, Typography, Box, Button, CircularProgress, } from "@mui/mate
 import Grid from "@mui/material/Grid2";
 import UserPosts from "../components/posts/posts";
 
-
 const ProfilePage: React.FC = () => {
     const navigate = useNavigate();
     const { user } = useUserContext();

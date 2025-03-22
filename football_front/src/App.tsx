@@ -9,6 +9,7 @@ import PostsFeed from "./Pages/PostsFeed";
 import UpdateInfo from "./Pages/UpdateUserInfo";
 import CreatePost from "./components/posts/CreatePost";
 import UpdatePost from "./components/posts/UpdatePost";
+import PostsComments from "./Pages/PostsComments";
 
 
 function App() {
@@ -24,6 +25,8 @@ function App() {
        { <Route path="/update" element={<UpdateInfo />} /> }
        { <Route path="/post/create" element={<CreatePost />} /> }
        { <Route path="/post/update/:id" element={<UpdatePost />} /> }
+       <Route path="addComments/:postId" element={<PostsComments />} />
+
       </Routes>
     </UserProvider>
     </Router>
