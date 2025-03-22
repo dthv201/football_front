@@ -15,7 +15,7 @@ const getUserPosts = async (userId?: string) => {
 };
 
 
-const createPost = async (newPost: PostFormData) => {
+const createPost = async (newPost: Post) => {
   const response = await axiosInstance.post<Post>(`/posts`, newPost);
 
   return response.data;
