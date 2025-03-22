@@ -38,7 +38,7 @@ const deletePost = async (postId: string) => {
 };
 
 const handleLike = async (postId: string) => {
-  const response = await axiosInstance.post(`posts/like/${postId}`);
+  const response = await axiosInstance.post(`posts/like`, {postId});
 
   return response.data;
 };

@@ -1,11 +1,10 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
 import { useUserContext } from "../contexts/UserContext";
 import Layout from "../components/page_tamplate/Layout";
 import {
   Card, CardContent, Typography, Box, Divider,
-  CardMedia, CardHeader, CircularProgress, Button
+  CardMedia, CardHeader, CircularProgress, Button, IconButton
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
@@ -14,13 +13,16 @@ import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import CommentIcon from "@mui/icons-material/Comment";
 import { Post } from "../types/Post";
 import { format } from "date-fns";
-import { getAllPosts } from "../services/postService";
+import { getAllPosts, handleLike } from "../services/postService";
 
 const PostsFeed: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useUserContext();
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+
+
+
 
   const fetchUserPosts = useCallback(async () => {
     if (!user?._id) return;
@@ -29,16 +31,27 @@ const PostsFeed: React.FC = () => {
       setLoading(true);
       const fetchedPosts = await getAllPosts();
       setPosts(fetchedPosts);
-    } catch {
-      toast.error("Failed to load posts");
+    } catch (error){
+      console.error("Failed to load posts", error);
     } finally {
       setLoading(false);
     }
   }, [user?._id]);
 
+  const handleLikeButton = useCallback(async (postId: string) => {
+    if (user) {
+      try {
+        await handleLike(postId);
+        await fetchUserPosts();
+      } catch (error) {
+        console.error(`We couldn't handle your like in the post`, error);
+      }
+    }
+}, [fetchUserPosts, user]);
+
   useEffect(() => {
     fetchUserPosts();
-  }, [fetchUserPosts]);
+  }, [fetchUserPosts, handleLikeButton]);
 
   const filteredPosts = posts.filter(post => post.owner !== user?._id && new Date(post.date).getTime() >= Date.now());
 
@@ -102,18 +115,19 @@ const PostsFeed: React.FC = () => {
                     <Divider sx={{ my: 1.5 }} />
                     
                     <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                      <Box sx={{ display: "flex", alignItems: "center" }}>
+                    <IconButton onClick={() => handleLikeButton(post._id!)}>
                         <ThumbUpIcon fontSize="small" color="primary" />
                         <Typography variant="body2" sx={{ ml: 0.5 }}>
                           {post.likes_number || 0}
                         </Typography>
-                      </Box>
-                      <Box sx={{ display: "flex", alignItems: "center" }}>
+                      </IconButton>
+
+                      <IconButton onClick={() => navigate(`/addComments/:${post._id!}`)}>
                         <CommentIcon fontSize="small" color="primary" />
                         <Typography variant="body2" sx={{ ml: 0.5 }}>
                           {post.comments_number || 0}
                         </Typography>
-                      </Box>
+                      </IconButton>
                     </Box>
                   </CardContent>
 
