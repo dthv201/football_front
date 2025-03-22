@@ -16,7 +16,6 @@ const ProfilePage: React.FC = () => {
     const { user } = useUserContext();
     const [posts, setPosts] = useState<Post[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
       const fetchPosts = async () => {
@@ -24,8 +23,8 @@ const ProfilePage: React.FC = () => {
           setIsLoading(true);
           const userPosts = await getUserPosts(user?._id);
           setPosts(userPosts);
-        } catch(error) {
-          setError("Failed to load posts");
+        } catch {
+          console.log("Failed to load posts");
         } finally {
           setIsLoading(false);
         }
@@ -44,8 +43,6 @@ const ProfilePage: React.FC = () => {
             toast.error(`Error logging out: ${error}`);
         }
     };
-
-    if (error) return <p>{error}</p>;
 
     return (
         <Layout title="Profile">

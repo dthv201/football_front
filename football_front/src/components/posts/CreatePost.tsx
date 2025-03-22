@@ -52,7 +52,16 @@ const CreatePost: React.FC = () => {
     setLoading(true);
     
     try {
-
+      // const dateTime = new Date(`${data.date}T${data.time}`);
+      
+      // const postData = {
+      //   title: data.title,
+      //   location: data.location,
+      //   content: data.content,
+      //   date: dateTime.toISOString(),
+      //   owner: user?._id, 
+      //   img: preview ? preview : undefined
+      // };
       await createPost(data);
       alert("Post created successfully!");
       reset();

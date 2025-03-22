@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import Layout from "../components/page_tamplate/Layout";
-import { useAuth } from "../contexts/AuthContext";
+import { useUserContext } from "../contexts/UserContext";
 import { useParams } from "react-router-dom";
+import Cookies from 'js-cookie';
 import BluePinkCircularProgress from "../components/CircularWait";
 import {
   Container,
@@ -12,15 +13,13 @@ import {
   TextField,
   Divider,
 } from "@mui/material";
+import { Comment } from "../types/Comment";
+import { createComment } from "../services/commentsService";
 
-interface Comment {
-  owner: string;
-  comment: string;
-  time?: string;
-}
 
 const PostsComments: React.FC = () => {
-  const { user, accessToken } = useAuth();
+  const accessToken = Cookies.get('access_token');
+  const { user } = useUserContext();
   const { postId } = useParams();
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState("");
@@ -29,27 +28,16 @@ const PostsComments: React.FC = () => {
   const handleAddComment = async () => {
     if (!newComment.trim()) return;
 
-    const commentData = {
+    const commentData: Comment = {
       comment: newComment,
-      postId: postId,
-      owner: user?.username,
+      postId: postId || "",
+      owner: user?.username || "",
     };
 
     try {
-      const response = await fetch("/comments", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(commentData),
-      });
+      const savedComment = await createComment(commentData);
 
-      if (!response.ok) {
-        throw new Error("Failed to create comment");
-      }
       console.log("Comment created successfully");
-      const savedComment = await response.json();
       setComments((prev) => [...prev, savedComment]);
     } catch (error) {
       console.error("Error creating comment:", error);
