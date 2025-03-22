@@ -1,6 +1,6 @@
 import { Post } from '../types/Post';
 import { axiosInstance } from './api-client';
-import {PostFormData} from '../types/Post';
+import { GenerateTeamsResponse } from '../types/Player';
 
 const getAllPosts = async () => {
   const response = await axiosInstance.get<Post[]>(`/posts`);
@@ -14,6 +14,12 @@ const getUserPosts = async (userId?: string) => {
   return response.data;
 };
 
+const getPost = async (postId: string) => {
+  const response = await axiosInstance.get<Post>(`/posts/${postId}`);
+
+  return response.data;
+};
+
 
 const createPost = async (newPost: Post) => {
   const response = await axiosInstance.post<Post>(`/posts`, newPost);
@@ -21,8 +27,8 @@ const createPost = async (newPost: Post) => {
   return response.data;
 };
 
-const updatePost = async (postId: string, editedPost: PostFormData) => {
-  const response = await axiosInstance.put<Post>(`/$posts/${postId}`, editedPost);
+const updatePost = async (postId: string, editedPost: Post) => {
+  const response = await axiosInstance.put<Post>(`/posts/${postId}`, editedPost);
 
   return response.data;
 };
@@ -37,5 +43,19 @@ const handleLike = async (postId: string) => {
   return response.data;
 };
 
+const addParticipant = async (postId: string, userId: string) => {
+  const response = await axiosInstance.post(`/posts/${postId}/add-participant`, { userId });
+  return response.data;
+};
 
-export { getAllPosts, getUserPosts, createPost, updatePost, deletePost, handleLike };
+const removeParticipant = async (postId: string, userId: string) => {
+  const response = await axiosInstance.post(`/posts/${postId}/remove-participant`, { userId });
+  return response.data;
+};
+
+const splitParticipantsIntoTeams = async (postId: string) => {
+  const response = await axiosInstance.post<GenerateTeamsResponse>(`/posts/${postId}/split-teams`);
+  return response.data;
+};
+
+export { getAllPosts, getUserPosts, createPost, updatePost, deletePost, handleLike, addParticipant, removeParticipant, splitParticipantsIntoTeams, getPost };

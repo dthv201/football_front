@@ -1,13 +1,12 @@
 import React from "react";
 import { Container, Box, Avatar, Typography } from "@mui/material";
 import { getImageUrl } from "../../utils/getImageUrl";
-import { User } from "../../types/User";
+import { useUserContext } from "../../contexts/UserContext";
 
-interface Props {
-    user: User | null;
-}
 
-const ProfileDetails: React.FC<Props> = ({ user }) => {
+
+const ProfileDetails: React.FC = () => {
+    const { user } = useUserContext();
     if (!user) {
         return (
             <Container maxWidth="sm">

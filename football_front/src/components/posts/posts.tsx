@@ -8,8 +8,6 @@ import {
   CardActions, 
   Button, 
   Box,
-  Chip,
-  Avatar,
   Divider,
   CardMedia,
   CardHeader,
@@ -127,28 +125,6 @@ const UserPosts: React.FC = () => {
                     Owner: {user?.username}
                   </Typography>
                 </Box>
-                
-                {post.participants && post.participants.length > 0 && (
-                  <Box sx={{ mb: 1.5 }}>
-                    <Typography variant="body2" fontWeight="medium" gutterBottom>
-                      Participants:
-                    </Typography>
-                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                      {post.participants.map((participant) => (
-                        <Chip
-                          key={participant._id}
-                          avatar={participant.profile_img ? 
-                            <Avatar src={participant.profile_img} /> : 
-                            <Avatar>{participant.username[0]}</Avatar>
-                          }
-                          label={participant.username}
-                          size="small"
-                          sx={{ mb: 0.5 }}
-                        />
-                      ))}
-                    </Box>
-                  </Box>
-                )}
                 
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center' }}>
