@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import ProfileDetails from "../components/profile_details/ProfileDetails";
@@ -17,22 +17,23 @@ const ProfilePage: React.FC = () => {
     const [posts, setPosts] = useState<Post[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+    
+    const fetchPosts = useCallback(async () => {
+      try {
+        setIsLoading(true);
+        const userPosts = await getUserPosts(user?._id);
+        setPosts(userPosts);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch(error) {
+        setError("Failed to load posts");
+      } finally {
+        setIsLoading(false);
+      }
+    }, [setIsLoading, setPosts, user?._id]);
 
     useEffect(() => {
-      const fetchPosts = async () => {
-        try {
-          setIsLoading(true);
-          const userPosts = await getUserPosts(user?._id);
-          setPosts(userPosts);
-        } catch(error) {
-          setError("Failed to load posts");
-        } finally {
-          setIsLoading(false);
-        }
-      };
-  
-      fetchPosts();
-    }, [user, posts]);
+        fetchPosts();
+    }, [user, fetchPosts]);
   
 
     const handleLogout = async () => {
