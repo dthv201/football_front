@@ -35,8 +35,6 @@ const UserPosts: React.FC = () => {
     const [posts, setPosts] = useState<Post[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
-    
-    
     const formatPostDate = (date: Date) => {
       return format(new Date(date), "dd/MM/yyyy HH:mm");
     };
@@ -52,6 +50,10 @@ const UserPosts: React.FC = () => {
         setIsLoading(false);
       }
     }, [setIsLoading, setPosts, user?._id]);
+
+    const handleEditClick = (post: Post) => {
+      navigate(`/post/update/${post}`, { state: { post } });
+    };
 
     const onDeleteButtonClick = useCallback(async (postId: string) => {
       try {
@@ -174,7 +176,7 @@ const UserPosts: React.FC = () => {
                 <Button 
                   variant="outlined" 
                   size="small"
-                  onClick={() => onDeleteButtonClick(post._id)}>
+                  onClick={() => { if (post?._id) onDeleteButtonClick(post._id); }}>
                   Delete
                 </Button>
               </CardActions>
