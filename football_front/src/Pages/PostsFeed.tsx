@@ -1,10 +1,11 @@
 import React, { useState, useCallback, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useUserContext } from "../contexts/UserContext";
 import Layout from "../components/page_tamplate/Layout";
 import {
-  Card, CardContent, Typography, Box, Chip, Avatar, Divider,
-  CardMedia, CardHeader, CircularProgress
+  Card, CardContent, Typography, Box, Divider,
+  CardMedia, CardHeader, CircularProgress, Button
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
@@ -16,6 +17,7 @@ import { format } from "date-fns";
 import { getAllPosts } from "../services/postService";
 
 const PostsFeed: React.FC = () => {
+  const navigate = useNavigate();
   const { user } = useUserContext();
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -99,28 +101,6 @@ const PostsFeed: React.FC = () => {
                     
                     <Divider sx={{ my: 1.5 }} />
                     
-                    {post.participants && post.participants.length > 0 && (
-                      <Box sx={{ mb: 1.5 }}>
-                        <Typography variant="body2" fontWeight="medium" gutterBottom>
-                          Participants:
-                        </Typography>
-                        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-                          {post.participants.map((participant) => (
-                            <Chip
-                              key={participant._id}
-                              avatar={participant.profile_img ? 
-                                <Avatar src={participant.profile_img} /> : 
-                                <Avatar>{participant.username[0]}</Avatar>
-                              }
-                              label={participant.username}
-                              size="small"
-                              sx={{ mb: 0.5 }}
-                            />
-                          ))}
-                        </Box>
-                      </Box>
-                    )}
-                    
                     <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                       <Box sx={{ display: "flex", alignItems: "center" }}>
                         <ThumbUpIcon fontSize="small" color="primary" />
@@ -136,6 +116,16 @@ const PostsFeed: React.FC = () => {
                       </Box>
                     </Box>
                   </CardContent>
+
+                  <Box sx={{ textAlign: "center", pb: 2 }}>
+                    <Button 
+                      variant="contained" 
+                      color="primary" 
+                      onClick={() => navigate(`/game-info/${post._id}`)}
+                    >
+                      Game Details
+                    </Button>
+                  </Box>
                 </Card>
               </Grid>
             ))

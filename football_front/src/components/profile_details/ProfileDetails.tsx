@@ -1,20 +1,18 @@
 import React, { useEffect } from "react";
 import { Container, Box, Avatar, Typography } from "@mui/material";
 import { getImageUrl } from "../../utils/getImageUrl";
-import { User } from "../../types/User";
+import { useUserContext } from "../../contexts/UserContext";
 
-interface Props {
-  user: User | null;
+const ProfileDetails: React.FC = () => {
+    const { user } = useUserContext();
+    useEffect(() => {
+      if (user) {
+        const imageUrl = getImageUrl(user.profile_img);
+        console.log("Computed profile image URL:", imageUrl);
 }
+}, [user]);
 
-const ProfileDetails: React.FC<Props> = ({ user }) => {
-  useEffect(() => {
-    if (user) {
-      const imageUrl = getImageUrl(user.profile_img);
-      console.log("Computed profile image URL:", imageUrl);
-    }
-  }, [user]);
-
+      
   if (!user) {
     return (
       <Container maxWidth="sm">

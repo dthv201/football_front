@@ -1,5 +1,3 @@
-import { User } from './User';
-
 export interface Post {
     _id?: string;
     owner: string; 
@@ -8,7 +6,7 @@ export interface Post {
     img?: string; 
     date: Date;
     location: string;
-    participants?: User[]; 
+    participantsIds?: string[]; 
     likes_number?: number; 
     comments_number?: number;
   }

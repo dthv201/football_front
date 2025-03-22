@@ -89,8 +89,19 @@ const UpdatePost: React.FC<UpdatePostProps> = ({ post: initialPost  }) => {
       if (!postId) {
         throw new Error("Post ID not found");
       }
+
+        const dateTime = new Date(`${data.date}T${data.time}`);
+        
+        const editedPost: Post = {
+          _id: postId,
+          title: data.title,
+          location: data.location,
+          content: data.content,
+          date: dateTime,
+          owner: data.owner,
+        };
       
-      await updatePost(postId, data);
+      await updatePost(postId, editedPost);
       
       alert("Post updated successfully!");
       navigate("/profile"); 
