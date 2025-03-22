@@ -9,14 +9,14 @@ const getAllPosts = async () => {
 };
 
 const getUserPosts = async (userId?: string) => {
-  const response = await axiosInstance.get<Post[]>(`/posts}`, { params: { userId } });
+  const response = await axiosInstance.get<Post[]>(`/posts`, { params: { userId } });
 
   return response.data;
 };
 
 
 const createPost = async (newPost: PostFormData) => {
-  const response = await axiosInstance.post<Post>(`/posts}`, newPost);
+  const response = await axiosInstance.post<Post>(`/posts`, newPost);
 
   return response.data;
 };
