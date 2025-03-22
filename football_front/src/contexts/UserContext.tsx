@@ -29,10 +29,6 @@ const UserProvider: FC<PropsWithChildren> = ({children}) => {
           }
          const userData = await response.json();
         setUser(userData);
-
-        if (location.pathname === '/') {
-          navigate('/profile');
-        }
       }
     };
 
