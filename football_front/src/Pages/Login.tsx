@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -28,6 +29,7 @@ const schema = yup.object().shape({
 
 
 const LoginPage: React.FC = () => {
+  const navigate = useNavigate();
   const {user, setUser} = useUserContext();
 
   const { control, handleSubmit, formState: { errors } } = useForm<LoginData>({
@@ -40,7 +42,7 @@ const onGoogleSuccess = async (credentialResponse: CredentialResponse) => {
   try {
     const res = await googleSignin(credentialResponse);
     console.log("Backend response:", res);
-    alert("Login successful.");
+    navigate("/profile");
   } catch (error) {
     console.error("Error during Google sign-in:", error);
     alert("Something went wrong with Google sign-in.");
@@ -55,7 +57,7 @@ const onGoogleFailure = async () => {
     try {
       const user = await userLogin(data);
       setUser(user);
-      alert("Login successful!");
+      navigate("/profile");
     } catch  {
       alert("Something went wrong. Please try again.");
     }
