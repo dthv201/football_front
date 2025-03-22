@@ -67,7 +67,29 @@ const UserPosts: React.FC = () => {
   const handleLikeButton = useCallback(async (postId: string) => {
     if (user) {
       try {
+<<<<<<< HEAD
         await handleLike(postId);
+=======
+        setIsLoading(true);
+        const userPosts = await getUserPosts(user?._id);
+        setPosts(userPosts);
+      } catch(error) {
+        toast.error(`Failed to load posts: ${error}`);
+      } finally {
+        setIsLoading(false);
+      }
+    }, [setIsLoading, setPosts, user?._id]);
+
+    const handleEditClick = (post: Post) => {
+      navigate(`/post/update/${post._id}`, { state: { post } });
+    };
+    
+
+    const onDeleteButtonClick = useCallback(async (postId: string) => {
+      try {
+        await deletePost(postId);
+        toast.success("Post deleted successfully");
+>>>>>>> b40bd14ccbcdf98986b5629e3b713b6ba900b631
         await fetchPosts();
       } catch (error) {
         console.error(`We couldn't handle your like in the post`, error);
