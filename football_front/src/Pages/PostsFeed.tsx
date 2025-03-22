@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { toast } from "react-toastify";
-import { useAuth } from "../contexts/AuthContext";
+import { useUserContext } from "../contexts/UserContext";
 import Layout from "../components/page_tamplate/Layout";
 import {
   Card, CardContent, Typography, Box, Chip, Avatar, Divider,
@@ -16,23 +16,23 @@ import { format } from "date-fns";
 import { getAllPosts } from "../services/postService";
 
 const PostsFeed: React.FC = () => {
-  const { user, accessToken } = useAuth();
+  const { user } = useUserContext();
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
   const fetchUserPosts = useCallback(async () => {
-    if (!accessToken || !user?._id) return;
+    if (!user?._id) return;
 
     try {
       setLoading(true);
-      const fetchedPosts = await getAllPosts(accessToken);
+      const fetchedPosts = await getAllPosts();
       setPosts(fetchedPosts);
-    } catch (e) {
+    } catch {
       toast.error("Failed to load posts");
     } finally {
       setLoading(false);
     }
-  }, [accessToken, user?._id]);
+  }, [user?._id]);
 
   useEffect(() => {
     fetchUserPosts();
@@ -44,7 +44,7 @@ const PostsFeed: React.FC = () => {
 
   return (
     <Layout title="Posts Feed">
-      {loading ? ( // הצגת טעינה בזמן שהנתונים נטענים
+      {loading ? ( 
         <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
           <CircularProgress size={50} />
         </Box>

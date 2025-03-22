@@ -1,82 +1,41 @@
-import { Post } from "../types/Post";
+import { Post } from '../types/Post';
+import { axiosInstance } from './api-client';
+import {PostFormData} from '../types/Post';
 
-const API_URL = "http://localhost:3000/posts/";
+const getAllPosts = async () => {
+  const response = await axiosInstance.get<Post[]>(`/posts`);
 
-export const getUserPosts = async (token: string, userId: string): Promise<Post[]> => {
-  const response = await fetch(`${API_URL}?owner=${userId}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error("Failed to fetch user posts");
-  }
-
-  return response.json();
+  return response.data;
 };
 
-export const getAllPosts = async (token: string): Promise<Post[]> => {
-  const response = await fetch(`${API_URL}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  });
+const getUserPosts = async (userId?: string) => {
+  const response = await axiosInstance.get<Post[]>(`/posts}`, { params: { userId } });
 
-  if (!response.ok) {
-    throw new Error("Failed to fetch user posts");
-  }
-
-  return response.json();
+  return response.data;
 };
 
-export const createPost = async (token: string, newPost: Omit<Post, "_id">): Promise<Post> => {
-  const response = await fetch(API_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify(newPost),
-  });
 
-  if (!response.ok) {
-    throw new Error("Failed to create post");
-  }
+const createPost = async (newPost: PostFormData) => {
+  const response = await axiosInstance.post<Post>(`/posts}`, newPost);
 
-  return response.json();
+  return response.data;
 };
 
-export const updatePost = async (token: string, postId: string, updatedPost: Partial<Post>): Promise<Post> => {
-  const response = await fetch(`${API_URL}/${postId}`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify(updatedPost),
-  });
+const updatePost = async (postId: string, editedPost: PostFormData) => {
+  const response = await axiosInstance.put<Post>(`/$posts/${postId}`, editedPost);
 
-  if (!response.ok) {
-    throw new Error("Failed to update post");
-  }
-
-  return response.json();
+  return response.data;
 };
 
-export const deletePost = async (token: string, postId: string): Promise<void> => {
-  const response = await fetch(`${API_URL}/${postId}`, {
-    method: "DELETE",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error("Failed to delete post");
-  }
+const deletePost = async (postId: string) => {
+  await axiosInstance.delete(`/posts/${postId}`);
 };
+
+const handleLike = async (postId: string) => {
+  const response = await axiosInstance.post(`posts/like/${postId}`);
+
+  return response.data;
+};
+
+
+export { getAllPosts, getUserPosts, createPost, updatePost, deletePost, handleLike };

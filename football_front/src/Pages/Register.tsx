@@ -24,7 +24,7 @@ import { registerUser, googleSignin } from "../services/auth";
 import { registerSchema } from "../validations/validationSchemas";
 import FormInput from "../components/FormInput";
 import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
-import { useAuth } from "../contexts/AuthContext";
+// import { useAuth } from "../contexts/AuthContext";
 
 const defaultAvatar = "/avatar.png";
 
@@ -38,7 +38,7 @@ interface FormData {
 }
 
 const RegisterPage: React.FC = () => {
-  const { setAuthInfo } = useAuth();
+  // const { setAuthInfo } = useAuth();
   const {
     control,
     handleSubmit,
@@ -73,7 +73,7 @@ const RegisterPage: React.FC = () => {
       const result = await registerUser(data, file || undefined);
       if (result.success) {
         console.log("Before setting auth info");
-          setAuthInfo(result.data.user, result.data.accessToken, result.data.refreshToken);
+          // setAuthInfo(result.data.user, result.data.accessToken, result.data.refreshToken);
           console.log("User:", localStorage.getItem("user"));
           console.log("Access Token:", localStorage.getItem("accessToken"));
          console.log("Refresh Token:", localStorage.getItem("refreshToken"));
@@ -94,8 +94,10 @@ const onGoogleSuccess = async (credentialResponse: CredentialResponse) => {
   setLoadingGoogle(true);
   console.log("Google response:", credentialResponse);
   try {
-    const res = await googleSignin(credentialResponse);
-    setAuthInfo(res.user, res.accessToken, res.refreshToken);
+    // const res = await googleSignin(credentialResponse);
+    await googleSignin(credentialResponse);
+
+    // setAuthInfo(res.user, res.accessToken, res.refreshToken);
     alert("Register successful.");
   } catch (error) {
     console.error("Error during Google Registretion:", error);

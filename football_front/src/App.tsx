@@ -1,5 +1,6 @@
 //app
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { UserProvider } from './contexts/UserContext';
 import WelcomePage from "./Pages/Welcome";
 import RegisterPage from "./Pages/Register";
 import LoginPage from "./Pages/Login";
@@ -13,6 +14,7 @@ import UpdatePost from "./components/posts/UpdatePost";
 function App() {
   return (
     <Router>
+      <UserProvider>
       <Routes>
         <Route path="/" element={<WelcomePage />} />
          <Route path="/register" element={<RegisterPage />} />
@@ -23,6 +25,7 @@ function App() {
        { <Route path="/post/create" element={<CreatePost />} /> }
        { <Route path="/post/update/:id" element={<UpdatePost />} /> }
       </Routes>
+    </UserProvider>
     </Router>
   );
 }

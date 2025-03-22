@@ -12,3 +12,13 @@ export interface Post {
     likes_number?: number; 
     comments_number?: number;
   }
+
+export interface PostFormData {
+  owner: string;
+  title: string;
+  location: string;
+  date: string;
+  time: string;
+  content: string;
+  img?: FileList;
+}

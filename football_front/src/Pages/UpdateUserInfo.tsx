@@ -19,10 +19,9 @@ import {
 } from "@mui/material";
 import { PhotoCamera } from "@mui/icons-material";
 import Layout from "../components/page_tamplate/Layout";
-import { useAuth } from "../contexts/AuthContext";
 import { getImageUrl } from "../utils/getImageUrl";
-
-
+import { updateUser } from "../services/userService";
+import { useUserContext } from "../contexts/UserContext";
 
 interface UpdateFormData {
   username: string;
@@ -30,9 +29,10 @@ interface UpdateFormData {
   profile_img?: FileList;
 }
 
+
 const UpdateUserInfo: React.FC = () => {
-  const { user,isLoading, accessToken } = useAuth();
-  const [loading, setLoading] = useState<boolean>(false);
+  const { user } = useUserContext();
+  const [isLoading, setLoading] = useState<boolean>(false);
   const [preview, setPreview] = useState<string>(
     user?.profile_img ? getImageUrl(user.profile_img) : "/avatar.png"
   );
@@ -66,8 +66,6 @@ const UpdateUserInfo: React.FC = () => {
 
   const onSubmit = async (data: UpdateFormData) => {
     setLoading(true);
-    console.log("Access Token:", accessToken);
-
 
     // Build FormData to support file upload
     const formData = new FormData();
@@ -80,20 +78,9 @@ const UpdateUserInfo: React.FC = () => {
     if (data.profile_img && data.profile_img.length > 0 && user?.profile_img !== data.profile_img[0].name) {
       formData.append("profile_img", data.profile_img[0]);
     }
-    const response = await fetch(`/auth/users/${user?._id}`, {
-      method: "PUT",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-      body: formData,
-    });
-    if (!response.ok) {
-      console.error("Failed to update user profile");
-      console.log("change failed:", response);
-      setLoading(false);
-      return;
-    }
-    console.log("change successful:", response);
+
+    if(user)
+      await updateUser(user._id, formData); 
     alert("changes saved",);
     setLoading(false);
   };
@@ -169,9 +156,9 @@ const UpdateUserInfo: React.FC = () => {
                   color: "white",
                   "&:hover": { bgcolor: "#3EA3D3" },
                 }}
-                disabled={loading}
+                disabled={isLoading}
               >
-                {loading ? <CircularProgress size={24} color="inherit" /> : "Update Profile"}
+                {isLoading ? <CircularProgress size={24} color="inherit" /> : "Update Profile"}
               </Button>
             </Box>
           </form>

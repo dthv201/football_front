@@ -5,8 +5,6 @@ import { User } from "../../types/User";
 
 interface Props {
     user: User | null;
-    // isLoading: boolean;
-    // onUpdateProfilePicture: (file: File) => void;
 }
 
 const ProfileDetails: React.FC<Props> = ({ user }) => {

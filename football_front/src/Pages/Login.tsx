@@ -14,25 +14,22 @@ import {
 import { Email, Lock } from "@mui/icons-material";
 import Layout from "../components/page_tamplate/Layout";
 import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
-import { googleSignin } from "../services/auth";
- import { useAuth } from "../contexts/AuthContext";
+import { googleSignin, userLogin } from "../services/auth";
+ import { useUserContext } from "../contexts/UserContext";
+import { LoginData } from "../types/User";
 
-// const API_URL = import.meta.env.VITE_API_URL;
-
-
+ 
 // Validation schema
 const schema = yup.object().shape({
   email: yup.string().email("Invalid email").required("Email is required"),
   password: yup.string().min(6, "Password must be at least 6 characters").required("Password is required"),
 });
 
-interface LoginData {
-  email: string;
-  password: string;
-}
+
 
 const LoginPage: React.FC = () => {
-  const { user,setAuthInfo } = useAuth();
+  const {user, setUser} = useUserContext();
+
   const { control, handleSubmit, formState: { errors } } = useForm<LoginData>({
     resolver: yupResolver(schema),
   });
@@ -56,23 +53,10 @@ const onGoogleFailure = async () => {
 
   const onSubmit = async (data: LoginData) => {
     try {
-      const response = await fetch(`/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-              });
-  
-      const result = await response.json();
-      console.log("Login response:", result);
-      if (response.ok) {
-        console.log("Login successful:", result);
-        setAuthInfo(result.user, result.accessToken, result.refreshToken);
-        alert("Login successful!");
-      } else {
-        alert(`Error: ${result.message}`);
-      }
-    } catch (error) {
-      console.error("Error logging in:", error);
+      const user = await userLogin(data);
+      setUser(user);
+      alert("Login successful!");
+    } catch  {
       alert("Something went wrong. Please try again.");
     }
   };

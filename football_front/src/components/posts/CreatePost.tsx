@@ -22,11 +22,10 @@ import {
   Description, 
   Article 
 } from "@mui/icons-material";
-import { useAuth } from "../../contexts/AuthContext";
-import { PostFormData } from "./index"
+import { PostFormData } from "../../types/Post";
+import { createPost } from "../../services/postService";
 
 const CreatePost: React.FC = () => {
-  const {user, accessToken} = useAuth();
   const navigate = useNavigate();
   const [preview, setPreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -53,29 +52,8 @@ const CreatePost: React.FC = () => {
     setLoading(true);
     
     try {
-    const dateTime = new Date(`${data.date}T${data.time}`);
-      
-    const postData = {
-      title: data.title,
-      location: data.location,
-      content: data.content,
-      date: dateTime.toISOString(),
-      owner: user?._id, 
-      img: preview ? preview : undefined
-    };
-    
-    const response = await fetch("http://localhost:3000/posts", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
-      },
-      body: JSON.stringify(postData),
-    });
-    
-    if (!response.ok) {
-      throw new Error("Failed to create post");
-    }
+      await createPost(data);
+
       alert("Post created successfully!");
       reset();
       setPreview(null);
