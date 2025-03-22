@@ -79,10 +79,7 @@ const ProfilePage: React.FC = () => {
                                     + Create Post
                                 </Button>
                             </Box>
-                            {isLoading ? (
-                                <CircularProgress />
-                            ):(<UserPosts posts={posts} />)
-                            }       
+                            <UserPosts />
                         </Container>
                     </Grid>
                 </Grid>
