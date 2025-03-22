@@ -1,110 +1,153 @@
+// FILE: src/components/posts/UpdatePost.tsx
 import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate, useLocation } from "react-router-dom";
-import Layout from "../page_tamplate/Layout";
-import { 
-  Box, 
-  Button, 
-  Container, 
-  TextField, 
-  Typography, 
+import { useNavigate, useParams } from "react-router-dom";
+import Layout from "../../components/page_tamplate/Layout"; // Adjust if needed
+import {
+  Box,
+  Button,
+  Container,
+  TextField,
+  Typography,
   Paper,
-  FormControl, 
-  FormLabel, 
+  FormControl,
+  FormLabel,
   Divider,
   CircularProgress,
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
-import { 
-  UploadFile, 
-  AccessTime, 
-  LocationOn, 
-  Description, 
-  Article 
+import {
+  UploadFile,
+  AccessTime,
+  LocationOn,
+  Description,
+  Article,
 } from "@mui/icons-material";
-import { Post } from "../../types/Post";
-import { LocationState } from "./index";
+import { Post, PostFormData } from "../../types/Post";
 import { updatePost } from "../../services/postService";
-import { PostFormData } from "../../types/Post";
+import { axiosInstance } from "../../services/api-client";
 
-interface UpdatePostProps {
-  post?: Post;
-}
-
-const UpdatePost: React.FC<UpdatePostProps> = ({ post: initialPost  }) => {
+const UpdatePost: React.FC = () => {
   const navigate = useNavigate();
-  const location = useLocation() as LocationState;
-  const [post, setPost] = useState<Post | undefined>(initialPost || location.state?.post);
+  const { id } = useParams<{ id: string }>(); // Post ID from URL
+  const [post, setPost] = useState<Post | undefined>(undefined);
   const [preview, setPreview] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    // reset,
-    setValue
-  } = useForm<PostFormData>();
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
 
+  const { register, handleSubmit, formState: { errors }, reset } = useForm<PostFormData>();
+
+  // Helper: fetch post by ID using axiosInstance (JWT automatically attached)
+  const fetchPostById = async (postId: string): Promise<Post> => {
+    const response = await axiosInstance.get<Post>(`/posts/${postId}`);
+    return response.data;
+  };
+
+  // Fetch the post if not already loaded
+  useEffect(() => {
+    if (!post && id) {
+      console.log("Fetching post by id:", id);
+      fetchPostById(id)
+        .then((fetchedPost) => {
+          console.log("Fetched post:", fetchedPost);
+          setPost(fetchedPost);
+        })
+        .catch((error) => {
+          console.error("Error fetching post:", error);
+          alert("Failed to load post.");
+          navigate("/profile");
+        });
+    }
+  }, [id, post, navigate]);
+
+  // Once post is available, populate the form fields.
   useEffect(() => {
     if (post) {
-      populateForm(post);
-      if (post?.img) {
+      const postDate = new Date(post.date);
+      const formattedDate = postDate.toISOString().split("T")[0]; // "YYYY-MM-DD"
+      const formattedTime = postDate.toTimeString().slice(0, 5);   // "HH:MM"
+      reset({
+        title: post.title,
+        location: post.location,
+        content: post.content,
+        owner: post.owner,
+        date: formattedDate,
+        time: formattedTime,
+      });
+      if (post.img) {
+        console.log("Setting preview from post.img:", post.img);
         setPreview(post.img);
       }
+    }
+  }, [post, reset]);
+
+  // Handle file selection (use local state, not React Hook Form)
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log("handleImageChange fired");
+    if (!e.target.files || e.target.files.length === 0) {
+      console.log("No file selected");
+      setSelectedFile(null);
+      setPreview(null);
       return;
     }
-  }, [post, setPost]);
-  
-  const populateForm = (postData: Post) => {
-    const postDate = new Date(postData.date);
-    const formattedDate = postDate.toISOString().split('T')[0];
-    const formattedTime = postDate.toTimeString().slice(0, 5);
-    
-    setValue("title", postData.title as PostFormData["title"]);
-    setValue("location", postData.location as PostFormData["location"]);
-    setValue("date", formattedDate as PostFormData["date"]);
-    setValue("time", formattedTime as PostFormData["time"]);
-    setValue("content", postData.content as PostFormData["content"]);
-    setValue("owner", postData.owner as PostFormData["owner"]);
+    const file = e.target.files[0];
+    console.log("User selected file:", file.name);
+    setSelectedFile(file);
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      console.log("FileReader finished, setting preview");
+      setPreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
+  // Final submission: update the post
   const onSubmit = async (data: PostFormData) => {
+    console.log("=== onSubmit called ===");
+    console.log("RHF data:", data);
     setLoading(true);
-    
     try {
-      const postId = post?._id;
-      
-      if (!postId) {
+      if (!post?._id) {
         throw new Error("Post ID not found");
       }
+      const dateTime = new Date(`${data.date}T${data.time}`);
+      console.log("Combined dateTime as Date object:", dateTime);
 
-        const dateTime = new Date(`${data.date}T${data.time}`);
-        
-        const editedPost: Post = {
-          _id: postId,
-          title: data.title,
-          location: data.location,
-          content: data.content,
-          date: dateTime,
-          owner: data.owner,
-        };
-      
-      await updatePost(postId, editedPost);
-      
+      // Build updated post
+      const editedPost: Post = {
+        _id: post._id,
+        title: data.title,
+        location: data.location,
+        content: data.content,
+        owner: data.owner,
+        date: dateTime,
+      };
+
+      // If a new file is selected, upload it and attach the URL
+      if (selectedFile) {
+        console.log("Uploading new file...");
+        const formData = new FormData();
+        formData.append("file", selectedFile);
+        const response = await fetch("http://localhost:3000/file", {
+          method: "POST",
+          body: formData,
+        });
+        if (!response.ok) {
+          throw new Error("File upload failed");
+        }
+        const result = await response.json();
+        console.log("File upload result:", result);
+        editedPost.img = result.url;
+      } else {
+        console.log("No new file selected; keeping existing image.");
+        editedPost.img = post.img;
+      }
+
+      console.log("Final edited post to send:", editedPost);
+      await updatePost(post._id, editedPost);
+      console.log("Post updated successfully");
       alert("Post updated successfully!");
-      navigate("/profile"); 
+      navigate("/profile");
     } catch (error) {
       console.error("Error updating post:", error);
       alert("Failed to update post. Please try again.");
@@ -121,207 +164,209 @@ const UpdatePost: React.FC<UpdatePostProps> = ({ post: initialPost  }) => {
             Edit your match post
           </Typography>
         </Box>
-        <Paper 
-          elevation={1} 
-          sx={{ 
-            p: { xs: 3, sm: 4 }, 
+        <Paper
+          elevation={1}
+          sx={{
+            p: { xs: 3, sm: 4 },
             backgroundColor: "rgba(255, 255, 255, 0.95)",
-            borderRadius: 2
+            borderRadius: 2,
           }}
         >
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <Grid container spacing={3}>
-              {/* Image Upload */}
-              <Grid size={12}>
-                <FormControl fullWidth>
-                  <FormLabel sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                    <UploadFile fontSize="small" /> Image
-                  </FormLabel>
-                  <Box 
-                    onClick={() => document.getElementById("imgInput")?.click()}
-                    sx={{ 
-                      height: 220, 
-                      border: '2px dashed #e0e0e0',
-                      borderRadius: 2,
-                      display: 'flex',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      cursor: 'pointer',
-                      overflow: 'hidden',
-                      transition: 'all 0.2s',
-                      '&:hover': {
-                        borderColor: '#bdbdbd'
-                      }
-                    }}
-                  >
-                    {preview ? (
-                      <Box 
-                        component="img" 
-                        src={preview} 
-                        alt="Preview" 
-                        sx={{ width: '100%', height: '100%', objectFit: 'cover' }} 
-                      />
-                    ) : (
-                      <Box textAlign="center" p={3}>
-                        <Box 
-                          sx={{ 
-                            width: 40, 
-                            height: 40, 
-                            borderRadius: '50%',
-                            backgroundColor: '#f5f5f5',
-                            display: 'flex',
-                            alignItems: 'center', 
-                            justifyContent: 'center',
-                            mb: 1,
-                            mx: 'auto'
-                          }}
-                        >
-                          <UploadFile sx={{ color: '#9e9e9e' }} />
+          { !post ? (
+            <Box textAlign="center" p={4}>
+              <Typography variant="h6" color="text.secondary">
+                Loading post data...
+              </Typography>
+            </Box>
+          ) : (
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <Grid container spacing={3}>
+                {/* IMAGE UPLOAD */}
+                <Grid item xs={12}>
+                  <FormControl fullWidth>
+                    <FormLabel sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
+                      <UploadFile fontSize="small" /> Image
+                    </FormLabel>
+                    <Box
+                      onClick={() => {
+                        console.log("Clicked to open file dialog");
+                        document.getElementById("imgInput")?.click();
+                      }}
+                      sx={{
+                        height: 220,
+                        border: "2px dashed #e0e0e0",
+                        borderRadius: 2,
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        cursor: "pointer",
+                        overflow: "hidden",
+                        transition: "all 0.2s",
+                        "&:hover": { borderColor: "#bdbdbd" },
+                      }}
+                    >
+                      {preview ? (
+                        <Box
+                          component="img"
+                          src={preview}
+                          alt="Preview"
+                          sx={{ width: "100%", height: "100%", objectFit: "cover" }}
+                        />
+                      ) : (
+                        <Box textAlign="center" p={3}>
+                          <Box
+                            sx={{
+                              width: 40,
+                              height: 40,
+                              borderRadius: "50%",
+                              backgroundColor: "#f5f5f5",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              mb: 1,
+                              mx: "auto",
+                            }}
+                          >
+                            <UploadFile sx={{ color: "#9e9e9e" }} />
+                          </Box>
+                          <Typography variant="body2" color="text.secondary">
+                            Upload a match-related image
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary" display="block" mt={0.5}>
+                            PNG, JPG, GIF up to 10MB
+                          </Typography>
                         </Box>
-                        <Typography variant="body2" color="text.secondary">
-                          Upload a match-related image
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary" display="block" mt={0.5}>
-                          PNG, JPG, GIF up to 10MB
-                        </Typography>
-                      </Box>
-                    )}
-                    
-                    <input
-                      id="imgInput"
-                      type="file"
-                      accept="image/*"
-                      style={{ display: 'none' }}
-                      {...register("img")}
-                      onChange={handleImageChange}
-                    />
-                  </Box>
-                </FormControl>
-              </Grid>
-              
-              <Grid size={12}>
-                <Divider />
-              </Grid>
-              
-              {/* Title */}
-              <Grid size={12}>
-                <FormControl fullWidth error={!!errors.title}>
-                  <FormLabel sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                    <Article fontSize="small" /> Title
-                  </FormLabel>
-                  <TextField
-                    placeholder="Enter match title"
-                    value={post?.title}
-                    fullWidth
-                    variant="outlined"
-                    size="medium"
-                    {...register("title", { required: "Title is required" })}
-                    error={!!errors.title}
-                    helperText={errors.title?.message}
-                  />
-                </FormControl>
-              </Grid>
-              
-              {/* Location */}
-              <Grid size={12}>
-                <FormControl fullWidth error={!!errors.location}>
-                  <FormLabel sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                    <LocationOn fontSize="small" /> Location
-                  </FormLabel>
-                  <TextField
-                    placeholder="Where will the match take place?"
-                    fullWidth
-                    variant="outlined"
-                    size="medium"
-                    {...register("location", { required: "Location is required" })}
-                    error={!!errors.location}
-                    helperText={errors.location?.message}
-                  />
-                </FormControl>
-              </Grid>
-              
-              {/* Date and Time */}
-              <Grid size={12}>
-                <FormControl fullWidth error={!!errors.date}>
-                  <FormLabel sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                    <AccessTime fontSize="small" /> Date
-                  </FormLabel>
-                  <TextField
-                    type="date"
-                    fullWidth
-                    variant="outlined"
-                    size="medium"
-                    InputLabelProps={{ shrink: true }}
-                    {...register("date", { required: "Date is required" })}
-                    error={!!errors.date}
-                    helperText={errors.date?.message}
-                  />
-                </FormControl>
-              </Grid>
-              
-              <Grid size={12}>
-                <FormControl fullWidth error={!!errors.time}>
-                  <FormLabel sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                    <AccessTime fontSize="small" /> Time
-                  </FormLabel>
-                  <TextField
-                    type="time"
-                    fullWidth
-                    variant="outlined"
-                    size="medium"
-                    InputLabelProps={{ shrink: true }}
-                    {...register("time", { required: "Time is required" })}
-                    error={!!errors.time}
-                    helperText={errors.time?.message}
-                  />
-                </FormControl>
-              </Grid>
-              
-              {/* Description */}
-              <Grid size={12}>
-                <FormControl fullWidth error={!!errors.content}>
-                  <FormLabel sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                    <Description fontSize="small" /> Description
-                  </FormLabel>
-                  <TextField
-                    placeholder="Describe the match (rules, teams, etc.)"
-                    multiline
-                    rows={4}
-                    fullWidth
-                    variant="outlined"
-                    size="medium"
-                    {...register("content", { required: "Description is required" })}
-                    error={!!errors.content}
-                    helperText={errors.content?.message || "Provide details about the match"}
-                  />
-                </FormControl>
-              </Grid>
-              
-              {/* Submit Button */}
-              <Grid size={12} sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
-                <Button
-                  type="submit"
-                  variant="contained"
-                  disabled={loading}
-                  sx={{ 
-                    px: 5, 
-                    py: 1.5, 
-                    bgcolor: '#1976d2', 
-                    '&:hover': { bgcolor: '#1565c0' } 
-                  }}
-                >
-                  {loading ? (
-                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                      <CircularProgress size={24} color="inherit" sx={{ mr: 1 }} />
-                      Processing...
+                      )}
+                      <input
+                        id="imgInput"
+                        type="file"
+                        accept="image/*"
+                        style={{ display: "none" }}
+                        onChange={handleImageChange}
+                      />
                     </Box>
-                  ) : (
-                    "Update Post"
-                  )}
-                </Button>
+                  </FormControl>
+                </Grid>
+
+                <Grid item xs={12}>
+                  <Divider />
+                </Grid>
+
+                {/* TITLE */}
+                <Grid item xs={12}>
+                  <FormControl fullWidth error={!!errors.title}>
+                    <FormLabel sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
+                      <Article fontSize="small" /> Title
+                    </FormLabel>
+                    <TextField
+                      placeholder="Enter match title"
+                      fullWidth
+                      variant="outlined"
+                      size="medium"
+                      {...register("title", { required: "Title is required" })}
+                      error={!!errors.title}
+                      helperText={errors.title?.message}
+                    />
+                  </FormControl>
+                </Grid>
+
+                {/* LOCATION */}
+                <Grid item xs={12}>
+                  <FormControl fullWidth error={!!errors.location}>
+                    <FormLabel sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
+                      <LocationOn fontSize="small" /> Location
+                    </FormLabel>
+                    <TextField
+                      placeholder="Where will the match take place?"
+                      fullWidth
+                      variant="outlined"
+                      size="medium"
+                      {...register("location", { required: "Location is required" })}
+                      error={!!errors.location}
+                      helperText={errors.location?.message}
+                    />
+                  </FormControl>
+                </Grid>
+
+                {/* DATE */}
+                <Grid item xs={12}>
+                  <FormControl fullWidth error={!!errors.date}>
+                    <FormLabel sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
+                      <AccessTime fontSize="small" /> Date
+                    </FormLabel>
+                    <TextField
+                      type="date"
+                      fullWidth
+                      variant="outlined"
+                      size="medium"
+                      InputLabelProps={{ shrink: true }}
+                      {...register("date", { required: "Date is required" })}
+                      error={!!errors.date}
+                      helperText={errors.date?.message}
+                    />
+                  </FormControl>
+                </Grid>
+
+                {/* TIME */}
+                <Grid item xs={12}>
+                  <FormControl fullWidth error={!!errors.time}>
+                    <FormLabel sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
+                      <AccessTime fontSize="small" /> Time
+                    </FormLabel>
+                    <TextField
+                      type="time"
+                      fullWidth
+                      variant="outlined"
+                      size="medium"
+                      InputLabelProps={{ shrink: true }}
+                      {...register("time", { required: "Time is required" })}
+                      error={!!errors.time}
+                      helperText={errors.time?.message}
+                    />
+                  </FormControl>
+                </Grid>
+
+                {/* DESCRIPTION */}
+                <Grid item xs={12}>
+                  <FormControl fullWidth error={!!errors.content}>
+                    <FormLabel sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
+                      <Description fontSize="small" /> Description
+                    </FormLabel>
+                    <TextField
+                      placeholder="Describe the match (rules, teams, etc.)"
+                      multiline
+                      rows={4}
+                      fullWidth
+                      variant="outlined"
+                      size="medium"
+                      {...register("content", { required: "Description is required" })}
+                      error={!!errors.content}
+                      helperText={errors.content?.message || "Provide details about the match"}
+                    />
+                  </FormControl>
+                </Grid>
+
+                {/* SUBMIT BUTTON */}
+                <Grid item xs={12} sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    disabled={loading}
+                    sx={{ px: 5, py: 1.5, bgcolor: "#1976d2", "&:hover": { bgcolor: "#1565c0" } }}
+                  >
+                    {loading ? (
+                      <Box sx={{ display: "flex", alignItems: "center" }}>
+                        <CircularProgress size={24} color="inherit" sx={{ mr: 1 }} />
+                        Processing...
+                      </Box>
+                    ) : (
+                      "Update Post"
+                    )}
+                  </Button>
+                </Grid>
               </Grid>
-            </Grid>
-          </form>
+            </form>
+          )}
         </Paper>
       </Container>
     </Layout>

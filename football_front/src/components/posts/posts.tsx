@@ -50,8 +50,9 @@ const UserPosts: React.FC = () => {
     }, [setIsLoading, setPosts, user?._id]);
 
     const handleEditClick = (post: Post) => {
-      navigate(`/post/update/${post}`, { state: { post } });
+      navigate(`/post/update/${post._id}`, { state: { post } });
     };
+    
 
     const onDeleteButtonClick = useCallback(async (postId: string) => {
       try {
