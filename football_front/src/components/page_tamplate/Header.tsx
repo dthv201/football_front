@@ -31,9 +31,8 @@ const Header: React.FC<HeaderProps> = ({ title }) => {
     { label: "Home", path: "/" },
     { label: "Profile", path: "/profile" },
     { label: "feed", path: "/feed" },
-    { label: "Update Info", path: "/update" },
+    { label: "Update User Info", path: "/update" },
     { label: "Create Game", path: "/post/create" },
-    { label: "Update Post", path: "/post/update/:id" },
    
 
   ];
