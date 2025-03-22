@@ -75,7 +75,7 @@ const onGoogleFailure = async () => {
         }}
       >
 
-        <Box sx={{ p: 4, bgcolor: "white", borderRadius: 2, boxShadow: 3, width: "100%", maxWidth: 400, textAlign: "center" }}>(
+        <Box sx={{ p: 4, bgcolor: "white", borderRadius: 2, boxShadow: 3, width: "100%", maxWidth: 400, textAlign: "center" }}>
             <form onSubmit={handleSubmit(onSubmit)}>
               <Stack spacing={2}>
 

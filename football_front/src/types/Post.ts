@@ -7,6 +7,8 @@ export interface Post {
     date: Date;
     location: string;
     participantsIds?: string[]; 
+    teamA?: string[];
+    teamB?: string[];
     likes_number?: number; 
     comments_number?: number;
   }

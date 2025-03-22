@@ -1,6 +1,5 @@
 import { Post } from '../types/Post';
 import { axiosInstance } from './api-client';
-import { GenerateTeamsResponse } from '../types/Player';
 
 const getAllPosts = async () => {
   const response = await axiosInstance.get<Post[]>(`/posts`);
@@ -45,17 +44,17 @@ const handleLike = async (postId: string) => {
 };
 
 const addParticipant = async (postId: string, userId: string) => {
-  const response = await axiosInstance.post(`/posts/${postId}/add-participant`, { userId });
+  const response = await axiosInstance.post(`/posts/add-participant`, { postId, userId });
   return response.data;
 };
 
 const removeParticipant = async (postId: string, userId: string) => {
-  const response = await axiosInstance.post(`/posts/${postId}/remove-participant`, { userId });
+  const response = await axiosInstance.post(`/posts/remove-participant`, {postId, userId });
   return response.data;
 };
 
 const splitParticipantsIntoTeams = async (postId: string) => {
-  const response = await axiosInstance.post<GenerateTeamsResponse>(`/posts/${postId}/split-teams`);
+  const response = await axiosInstance.post<Post>(`/posts/split-teams`, { postId });
   return response.data;
 };
 
