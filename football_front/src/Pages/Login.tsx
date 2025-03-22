@@ -31,11 +31,9 @@ const schema = yup.object().shape({
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const {user, setUser} = useUserContext();
-
   const { control, handleSubmit, formState: { errors } } = useForm<LoginData>({
     resolver: yupResolver(schema),
   });
-
 
 const onGoogleSuccess = async (credentialResponse: CredentialResponse) => {
   console.log("Google response:", credentialResponse);
@@ -55,8 +53,9 @@ const onGoogleFailure = async () => {
 
   const onSubmit = async (data: LoginData) => {
     try {
-      const user = await userLogin(data);
-      setUser(user);
+      const loggedUser = await userLogin(data);
+      setUser(loggedUser);
+      console.info(`Logged user: ${user}`);
       navigate("/profile");
     } catch  {
       alert("Something went wrong. Please try again.");
@@ -76,16 +75,7 @@ const onGoogleFailure = async () => {
         }}
       >
 
-        <Box sx={{ p: 4, bgcolor: "white", borderRadius: 2, boxShadow: 3, width: "100%", maxWidth: 400, textAlign: "center" }}>
-     
-       
-
-          {user ? (
-            <Typography variant="h5" align="center" sx={{ mt: 5, mb: 3, color: "black" }}>
-              Welcome, {user.username}!
-            </Typography>
-          ) : (
-            
+        <Box sx={{ p: 4, bgcolor: "white", borderRadius: 2, boxShadow: 3, width: "100%", maxWidth: 400, textAlign: "center" }}>(
             <form onSubmit={handleSubmit(onSubmit)}>
               <Stack spacing={2}>
 
@@ -159,7 +149,7 @@ const onGoogleFailure = async () => {
 
               </Stack>
             </form>
-          )}
+          
 
         </Box>
       </Container>

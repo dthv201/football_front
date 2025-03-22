@@ -1,39 +1,17 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import ProfileDetails from "../components/profile_details/ProfileDetails";
 import { useUserContext } from "../contexts/UserContext";
 import { userLogout } from "../services/auth";
-import { getUserPosts } from "../services/postService";
-import { Post } from "../types/Post";
 import Layout from "../components/page_tamplate/Layout";
-import { Container, Typography, Box, Button, CircularProgress, } from "@mui/material";
+import { Container, Typography, Box, Button } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import UserPosts from "../components/posts/posts";
 
 const ProfilePage: React.FC = () => {
     const navigate = useNavigate();
     const { user } = useUserContext();
-    const [posts, setPosts] = useState<Post[]>([]);
-    const [isLoading, setIsLoading] = useState<boolean>(true);
-    
-    const fetchPosts = useCallback(async () => {
-      try {
-        setIsLoading(true);
-        const userPosts = await getUserPosts(user?._id);
-        setPosts(userPosts);
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      } catch(error) {
-        toast.error(`Failed to load posts: ${error}`);
-      } finally {
-        setIsLoading(false);
-      }
-    }, [setIsLoading, setPosts, user?._id]);
-
-    useEffect(() => {
-        fetchPosts();
-    }, [user, fetchPosts]);
-  
 
     const handleLogout = async () => {
         try {
@@ -55,7 +33,7 @@ const ProfilePage: React.FC = () => {
                                 My Profile
                             </Typography>
                             {user ? (
-                                <ProfileDetails user={user} />
+                                <ProfileDetails />
                             ) : (
                                 <Typography variant="h6" textAlign="center">
                                     User not found
