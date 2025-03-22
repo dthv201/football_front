@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import Layout from "../components/page_tamplate/Layout";
-import { useAuth } from "../contexts/AuthContext";
 import { useParams } from "react-router-dom";
 import BluePinkCircularProgress from "../components/CircularWait";
 import {
@@ -12,15 +11,11 @@ import {
   TextField,
   Divider,
 } from "@mui/material";
-
-interface Comment {
-  owner: string;
-  comment: string;
-  time?: string;
-}
+import { useUserContext } from "../contexts/UserContext";
+import { Comment, createComment, getPostComments } from "../services/commentsService";
 
 const PostsComments: React.FC = () => {
-  const { user, accessToken } = useAuth();
+  const { user } = useUserContext();
   const { postId } = useParams();
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState("");
@@ -36,21 +31,9 @@ const PostsComments: React.FC = () => {
     };
 
     try {
-      const response = await fetch("/comments", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(commentData),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to create comment");
-      }
+      const comment = await createComment(commentData);
       console.log("Comment created successfully");
-      const savedComment = await response.json();
-      setComments((prev) => [...prev, savedComment]);
+      setComments((prev) => [...prev, comment]);
     } catch (error) {
       console.error("Error creating comment:", error);
       alert("Failed to create comment. Please try again.");
@@ -60,13 +43,7 @@ const PostsComments: React.FC = () => {
   };
 
   useEffect(() => {
-    fetch(`/comments/posts/${postId}`, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/json",
-      },
-    })
-      .then((res) => res.json())
+    getPostComments(postId!)
       .then((data) => {
         setComments(data);
         setLoading(false);
@@ -75,7 +52,7 @@ const PostsComments: React.FC = () => {
         console.error("Error fetching comments:", err);
         setLoading(false);
       });
-  }, [postId, accessToken]);
+  }, [postId, user?.accessToken]);
 
   return (
     <Layout title="Comments">
