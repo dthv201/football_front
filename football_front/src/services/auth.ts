@@ -17,7 +17,7 @@ export interface IUser {
   }
 
 const API_URL = "http://localhost:3000";
-const JWT_TOKEN_EXPIRES = '10m';
+const JWT_TOKEN_EXPIRES = '1010m';
 
 export const registerUser = async (data: IUser, file?: File) => {
     const formData = new FormData();

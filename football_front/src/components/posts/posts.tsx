@@ -1,7 +1,5 @@
-// import React, { useCallback } from "react";
-import React from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-// import { useAuth } from "../../contexts/AuthContext";
 import { useUserContext } from "../../contexts/UserContext";
 import { 
   Card, 
@@ -15,6 +13,7 @@ import {
   Divider,
   CardMedia,
   CardHeader,
+  CircularProgress,
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import LocationOnIcon from '@mui/icons-material/LocationOn';
@@ -24,28 +23,54 @@ import CommentIcon from '@mui/icons-material/Comment';
 import PersonIcon from '@mui/icons-material/Person';
 import { Post } from "../../types/Post";
 import { format } from "date-fns";
+import { deletePost, getUserPosts } from "../../services/postService";
+import { toast } from "react-toastify";
 
-interface UserPostsProps {
-  posts: Post[];
-}
 
-const UserPosts: React.FC<UserPostsProps> = ({ posts }) => {
-    const { user } = useUserContext();
+
+
+const UserPosts: React.FC = () => {
     const navigate = useNavigate();
-  
-  const formatPostDate = (date: Date) => {
-    return format(new Date(date), "dd/MM/yyyy HH:mm"); // Format: Jan 1, 2021
-  };
+    const { user } = useUserContext();
+    const [posts, setPosts] = useState<Post[]>([]);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  const handleEditClick = (post: Post) => {
-    navigate(`/post/update/${post}`, { state: { post } });
-  };
+    const formatPostDate = (date: Date) => {
+      return format(new Date(date), "dd/MM/yyyy HH:mm");
+    };
+    
+    const fetchPosts = useCallback(async () => {
+      try {
+        setIsLoading(true);
+        const userPosts = await getUserPosts(user?._id);
+        setPosts(userPosts);
+      } catch(error) {
+        toast.error(`Failed to load posts: ${error}`);
+      } finally {
+        setIsLoading(false);
+      }
+    }, [setIsLoading, setPosts, user?._id]);
 
-  // const onDeleteButtonClick = useCallback(() => {
-  //   onDeleteClick?.(post._id);
-  // }, [post._id, onDeleteClick]);
+    const handleEditClick = (post: Post) => {
+      navigate(`/post/update/${post}`, { state: { post } });
+    };
+
+    const onDeleteButtonClick = useCallback(async (postId: string) => {
+      try {
+        await deletePost(postId);
+        toast.success("Post deleted successfully");
+        await fetchPosts();
+      } catch (error) {
+        toast.error(`Failed to load posts: ${error}`);
+      }
+    }, [fetchPosts]);
+
+    useEffect(() => {
+        fetchPosts();
+    }, [user, fetchPosts]);
 
   return (
+    isLoading ? ( <CircularProgress /> ) :
     <Grid container spacing={3}>
       {posts.length > 0 ? (
         posts.map((post) => (
@@ -151,7 +176,7 @@ const UserPosts: React.FC<UserPostsProps> = ({ posts }) => {
                 <Button 
                   variant="outlined" 
                   size="small"
-                  onClick={() => navigate(`/edit-post/${post._id}`)}>
+                  onClick={() => { if (post?._id) onDeleteButtonClick(post._id); }}>
                   Delete
                 </Button>
               </CardActions>

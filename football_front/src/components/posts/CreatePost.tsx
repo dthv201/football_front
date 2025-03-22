@@ -22,11 +22,13 @@ import {
   Description, 
   Article 
 } from "@mui/icons-material";
-import { PostFormData } from "../../types/Post";
+import { Post, PostFormData } from "../../types/Post";
 import { createPost } from "../../services/postService";
+import { useUserContext } from "../../contexts/UserContext";
 
 const CreatePost: React.FC = () => {
   const navigate = useNavigate();
+  const { user } = useUserContext();
   const [preview, setPreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   
@@ -52,8 +54,21 @@ const CreatePost: React.FC = () => {
     setLoading(true);
     
     try {
-
-      await createPost(data);
+      if(!user) {
+       throw new Error("User not found");
+      }
+      const dateTime = new Date(`${data.date}T${data.time}`);
+      
+      const postData: Post = {
+        title: data.title,
+        location: data.location,
+        content: data.content,
+        date: dateTime,
+        owner: user._id, 
+        img: preview ? preview : undefined
+      };
+      
+      await createPost(postData);
       alert("Post created successfully!");
       reset();
       setPreview(null);

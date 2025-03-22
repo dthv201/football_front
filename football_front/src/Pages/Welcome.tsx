@@ -4,9 +4,11 @@ import { useNavigate } from "react-router-dom";
 import EditIcon from "@mui/icons-material/Edit";
 import LoginIcon from "@mui/icons-material/Login";
 import Layout from "../components/page_tamplate/Layout";
+import { useUserContext } from "../contexts/UserContext";
 
 const WelcomePage: React.FC = () => {
   const navigate = useNavigate();
+  const { user } = useUserContext();
 
   return (
     <Layout title="Welcome to Soccer Match Finder">
@@ -40,6 +42,11 @@ const WelcomePage: React.FC = () => {
           </Typography>
   
           {/* Buttons */}
+        {user ?  (
+          <Typography variant="h4" mt={2} sx={{ color: "#4D4D4D" }}>
+            Hello {user.username}
+          </Typography>
+        ):(
           <Box sx={{ display: "flex", justifyContent: "center", gap: 2, mt: 3 }}>
             <Button
               variant="contained"
@@ -48,14 +55,15 @@ const WelcomePage: React.FC = () => {
               sx={{
                 backgroundColor: "#66A55E",
                 color: "white",
-                px: 4, py: 1.5,
+                px: 4,
+                py: 1.5,
                 "&:hover": { backgroundColor: "#5C9A55" },
               }}
               onClick={() => navigate("/register")}
             >
               Register
             </Button>
-  
+
             <Button
               variant="contained"
               size="large"
@@ -63,7 +71,8 @@ const WelcomePage: React.FC = () => {
               sx={{
                 backgroundColor: "#4DB6E5",
                 color: "white",
-                px: 4, py: 1.5,
+                px: 4,
+                py: 1.5,
                 "&:hover": { backgroundColor: "#3EA3D3" },
               }}
               onClick={() => navigate("/login")}
@@ -71,6 +80,7 @@ const WelcomePage: React.FC = () => {
               Login
             </Button>
           </Box>
+        ) }
         </Grid>
   
         {/* Right Image */}

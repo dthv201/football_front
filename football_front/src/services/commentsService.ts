@@ -1,5 +1,4 @@
 import { axiosInstance } from "./api-client";
-
 export interface Comment {
     owner: string;
     comment: string;
@@ -18,3 +17,6 @@ export const getPostComments = async (postId: string) => {
     const posts = await axiosInstance.get<Comment[]>(`/comments/posts/${postId}`);
     return posts.data;
 }
+
+
+

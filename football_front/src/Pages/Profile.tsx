@@ -16,7 +16,6 @@ const ProfilePage: React.FC = () => {
     const { user } = useUserContext();
     const [posts, setPosts] = useState<Post[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string | null>(null);
     
     const fetchPosts = useCallback(async () => {
       try {
@@ -25,7 +24,7 @@ const ProfilePage: React.FC = () => {
         setPosts(userPosts);
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch(error) {
-        setError("Failed to load posts");
+        toast.error(`Failed to load posts: ${error}`);
       } finally {
         setIsLoading(false);
       }
@@ -45,8 +44,6 @@ const ProfilePage: React.FC = () => {
             toast.error(`Error logging out: ${error}`);
         }
     };
-
-    if (error) return <p>{error}</p>;
 
     return (
         <Layout title="Profile">
@@ -82,10 +79,7 @@ const ProfilePage: React.FC = () => {
                                     + Create Post
                                 </Button>
                             </Box>
-                            {isLoading ? (
-                                <CircularProgress />
-                            ):(<UserPosts posts={posts} />)
-                            }       
+                            <UserPosts />
                         </Container>
                     </Grid>
                 </Grid>
