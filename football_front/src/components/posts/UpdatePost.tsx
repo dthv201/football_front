@@ -22,16 +22,16 @@ import {
   Description, 
   Article 
 } from "@mui/icons-material";
-import { useAuth } from "../../contexts/AuthContext";
 import { Post } from "../../types/Post";
-import { PostFormData, LocationState } from "./index";
+import { LocationState } from "./index";
+import { updatePost } from "../../services/postService";
+import { PostFormData } from "../../types/Post";
 
 interface UpdatePostProps {
   post?: Post;
 }
 
 const UpdatePost: React.FC<UpdatePostProps> = ({ post: initialPost  }) => {
-  const { user, accessToken } = useAuth();
   const navigate = useNavigate();
   const location = useLocation() as LocationState;
   const [post, setPost] = useState<Post | undefined>(initialPost || location.state?.post);
@@ -61,12 +61,12 @@ const UpdatePost: React.FC<UpdatePostProps> = ({ post: initialPost  }) => {
     const formattedDate = postDate.toISOString().split('T')[0];
     const formattedTime = postDate.toTimeString().slice(0, 5);
     
-    setValue("title", postData.title);
-    setValue("location", postData.location);
-    setValue("date", formattedDate);
-    setValue("time", formattedTime);
-    setValue("content", postData.content);
-    setValue("owner", postData.owner);
+    setValue("title", postData.title as PostFormData["title"]);
+    setValue("location", postData.location as PostFormData["location"]);
+    setValue("date", formattedDate as PostFormData["date"]);
+    setValue("time", formattedTime as PostFormData["time"]);
+    setValue("content", postData.content as PostFormData["content"]);
+    setValue("owner", postData.owner as PostFormData["owner"]);
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -84,35 +84,13 @@ const UpdatePost: React.FC<UpdatePostProps> = ({ post: initialPost  }) => {
     setLoading(true);
     
     try {
-      const dateTime = new Date(`${data.date}T${data.time}`);
-      
-      const postData = {
-        title: data.title,
-        location: data.location,
-        content: data.content,
-        date: dateTime.toISOString(),
-        owner: user?._id,
-        img: preview ? preview : undefined
-      };
-      
       const postId = post?._id;
       
       if (!postId) {
         throw new Error("Post ID not found");
       }
       
-      const response = await fetch(`http://localhost:3000/posts/${postId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-        },
-        body: JSON.stringify(postData),
-      });
-      
-      if (!response.ok) {
-        throw new Error("Failed to update post");
-      }
+      await updatePost(postId, data);
       
       alert("Post updated successfully!");
       navigate("/profile"); 

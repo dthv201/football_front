@@ -15,10 +15,11 @@ import {
 import { Email, Lock } from "@mui/icons-material";
 import Layout from "../components/page_tamplate/Layout";
 import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
-import { googleSignin } from "../services/auth";
-import { useAuth } from "../contexts/AuthContext";
+
+import { googleSignin, userLogin } from "../services/auth";
+ import { useUserContext } from "../contexts/UserContext";
+import { LoginData } from "../types/User";
 import { useNavigate } from "react-router-dom";
-import { loginUser, LoginData } from "../services/auth";
 
 // Validation schema remains the same
 const schema = yup.object().shape({
@@ -30,10 +31,9 @@ const schema = yup.object().shape({
 });
 
 const LoginPage: React.FC = () => {
-  const { user, setAuthInfo } = useAuth();
+  const {user, setUser} = useUserContext();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-
   const {
     control,
     handleSubmit,
@@ -67,25 +67,19 @@ const LoginPage: React.FC = () => {
   };
 
   const onSubmit = async (data: LoginData) => {
+    
+    try {
       setLoading(true);
-      try{
-      const result = await loginUser(data);
-      setAuthInfo(
-        { ...result.user, skillLevel: result.user.skillLevel || "Beginner" },
-        result.accessToken,
-        result.refreshToken
-      );
-      console.log("Login response:", result);
+      const user = await userLogin(data);
+      setUser(user);
+      console.log("Login response:", user);
       navigate("/profile"); 
-    } catch (error: unknown) {
-      console.error("Error logging in:", error);
-      if (error instanceof Error) {
-        alert(`Error: ${error.message}`);
-      } else {
-        alert("An unknown error occurred.");
-      }
+    } catch  {
+      alert("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
+    }
+      
     }
   };
 

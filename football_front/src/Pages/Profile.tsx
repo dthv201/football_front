@@ -1,9 +1,9 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import ProfileDetails from "../components/profile_details/ProfileDetails";
-import { useAuth } from "../contexts/AuthContext";
-import { logout } from "../services/auth";
+import { useUserContext } from "../contexts/UserContext";
+import { userLogout } from "../services/auth";
 import { getUserPosts } from "../services/postService";
 import { Post } from "../types/Post";
 import Layout from "../components/page_tamplate/Layout";
@@ -12,40 +12,40 @@ import Grid from "@mui/material/Grid2";
 import UserPosts from "../components/posts/posts";
 
 const ProfilePage: React.FC = () => {
-    const authContext = useAuth();
-    const { user, accessToken } = authContext;
     const navigate = useNavigate();
+    const { user } = useUserContext();
     const [posts, setPosts] = useState<Post[]>([]);
-    const [loading, setLoading] = useState<boolean>(true);
-
-    const fetchUserPosts = useCallback(async () => {
-        if (!accessToken || !user?._id) return;
-
-        try {
-            setLoading(true);
-            const fetchedPosts = await getUserPosts(accessToken, user._id);
-            setPosts(fetchedPosts);
-        } catch (e) {
-            toast.error("Failed to load posts");
-        } finally {
-            setLoading(false);
-        }
-    }, [accessToken, user?._id]);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        fetchUserPosts();
-    }, [fetchUserPosts]);
+      const fetchPosts = async () => {
+        try {
+          setIsLoading(true);
+          const userPosts = await getUserPosts(user?._id);
+          setPosts(userPosts);
+        } catch(error) {
+          setError("Failed to load posts");
+        } finally {
+          setIsLoading(false);
+        }
+      };
+  
+      fetchPosts();
+    }, [user, posts]);
+  
 
     const handleLogout = async () => {
         try {
-            await logout();
-            authContext.logout();
+            await userLogout();
             navigate("/");
             toast.success("Logged out successfully");
         } catch (error) {
             toast.error(`Error logging out: ${error}`);
         }
     };
+
+    if (error) return <p>{error}</p>;
 
     return (
         <Layout title="Profile">
@@ -81,14 +81,10 @@ const ProfilePage: React.FC = () => {
                                     + Create Post
                                 </Button>
                             </Box>
-                            {loading ? (
+                            {isLoading ? (
                                 <CircularProgress />
-                            ) : posts.length > 0 ? (
-                                <UserPosts posts={posts} />)
-                                :
-                                (
-                                    <Typography>No posts found</Typography>
-                                )}
+                            ):(<UserPosts posts={posts} />)
+                            }       
                         </Container>
                     </Grid>
                 </Grid>

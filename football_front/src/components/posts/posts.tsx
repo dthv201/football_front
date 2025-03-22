@@ -1,6 +1,8 @@
+// import React, { useCallback } from "react";
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../contexts/AuthContext";
+// import { useAuth } from "../../contexts/AuthContext";
+import { useUserContext } from "../../contexts/UserContext";
 import { 
   Card, 
   CardContent, 
@@ -28,10 +30,9 @@ interface UserPostsProps {
 }
 
 const UserPosts: React.FC<UserPostsProps> = ({ posts }) => {
-    const { user } = useAuth();
+    const { user } = useUserContext();
     const navigate = useNavigate();
   
-  // Function to format date
   const formatPostDate = (date: Date) => {
     return format(new Date(date), "dd/MM/yyyy HH:mm"); // Format: Jan 1, 2021
   };
@@ -39,6 +40,10 @@ const UserPosts: React.FC<UserPostsProps> = ({ posts }) => {
   const handleEditClick = (post: Post) => {
     navigate(`/post/update/${post}`, { state: { post } });
   };
+
+  // const onDeleteButtonClick = useCallback(() => {
+  //   onDeleteClick?.(post._id);
+  // }, [post._id, onDeleteClick]);
 
   return (
     <Grid container spacing={3}>
