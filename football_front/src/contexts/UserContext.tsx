@@ -3,6 +3,8 @@ import {Dispatch, FC, PropsWithChildren, SetStateAction, createContext, useConte
 import {useNavigate} from 'react-router';
 import { LoggedUser } from "../types/User";
 
+const BASE_URL = import.meta.env.VITE_SERVER_URL;
+
 interface UserContextType {
   user: LoggedUser | null;
   setUser: Dispatch<SetStateAction<LoggedUser | null>>;
@@ -18,7 +20,7 @@ const UserProvider: FC<PropsWithChildren> = ({children}) => {
   useEffect(() => {
     const fetchUserData = async () => {
       if (accessToken) {
-        const response = await fetch("http://localhost:3000/auth/user", {
+        const response = await fetch(`${BASE_URL}/auth/user`, {
             method: "GET",
             headers: {
               Authorization: `Bearer ${accessToken}`,

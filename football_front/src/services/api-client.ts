@@ -2,10 +2,10 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 import {parseExpirationInDays} from '../utils/dateUtils';
 
-// const BASE_URL = import.meta.env.API_URL;
-// const JWT_TOKEN_EXPIRES = import.meta.env.JWT_TOKEN_EXPIRES;
-const BASE_URL = "http://localhost:3000";
-const JWT_TOKEN_EXPIRES = '10m';
+const BASE_URL = import.meta.env.VITE_SERVER_URL;
+const JWT_TOKEN_EXPIRES = import.meta.env.VITE_JWT_TOKEN_EXPIRES;
+// const BASE_URL = "node91.cs.colman.ac.il";
+// const JWT_TOKEN_EXPIRES = '1h';
 
 const axiosInstance = axios.create({
   baseURL: BASE_URL,
