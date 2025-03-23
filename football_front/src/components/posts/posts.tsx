@@ -12,6 +12,7 @@ import {
   CardMedia,
   CardHeader,
   CircularProgress,
+  IconButton,
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import LocationOnIcon from '@mui/icons-material/LocationOn';
@@ -70,7 +71,9 @@ const UserPosts: React.FC = () => {
           await handleLike(postId);
           await fetchPosts();
         } catch (error) {
+
           console.error(`We couldn't handle your like in the post, error`, error);
+
         }
       }
     }, [fetchPosts, user]);
@@ -139,19 +142,25 @@ const UserPosts: React.FC = () => {
                 </Box>
                 
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+
                 <IconButton onClick={() => handleLikeButton(post._id!)}>
+
                       <ThumbUpIcon fontSize="small" color="primary" />
                       <Typography variant="body2" sx={{ ml: 0.5 }}>
                         {post.likes_number || 0}
                       </Typography>
                     </IconButton>
+
                   <IconButton onClick={() => navigate(`/addComments/${post._id!}`)}>
+
                       <CommentIcon fontSize="small" color="primary" />
                       <Typography variant="body2" sx={{ ml: 0.5 }}>
                         {post.comments_number || 0}
                       </Typography>
                     </IconButton>
+
                 </Box>
+
               </CardContent>
               
               <CardActions sx={{ display: "flex", justifyContent: "flex-end", p: 2, pt: 0 }}>
@@ -167,6 +176,13 @@ const UserPosts: React.FC = () => {
                   onClick={() => { if (post?._id) onDeleteButtonClick(post._id); }}>
                   Delete
                 </Button>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => navigate(`/game-info/${post._id}`)}
+                  >
+                    Game Details
+                  </Button>
               </CardActions>
             </Card>
           </Grid>

@@ -1,12 +1,13 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
 import { useUserContext } from "../contexts/UserContext";
 import Layout from "../components/page_tamplate/Layout";
 import {
   Card, CardContent, Typography, Box, Divider,
+
   CardMedia, CardHeader, CircularProgress, Button,
   IconButton
+
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
@@ -23,6 +24,9 @@ const PostsFeed: React.FC = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
+
+
+
   const fetchUserPosts = useCallback(async () => {
     if (!user?._id) return;
 
@@ -30,8 +34,8 @@ const PostsFeed: React.FC = () => {
       setLoading(true);
       const fetchedPosts = await getAllPosts();
       setPosts(fetchedPosts);
-    } catch {
-      toast.error("Failed to load posts");
+    } catch (error){
+      console.error("Failed to load posts", error);
     } finally {
       setLoading(false);
     }
@@ -43,14 +47,16 @@ const PostsFeed: React.FC = () => {
         await handleLike(postId);
         await fetchUserPosts();
       } catch (error) {
+
         console.error(`We couldn't handle your like in the post, error`, error);
+
       }
     }
 }, [fetchUserPosts, user]);
 
   useEffect(() => {
     fetchUserPosts();
-  }, [fetchUserPosts]);
+  }, [fetchUserPosts, handleLikeButton]);
 
   const filteredPosts = posts.filter(post => post.owner !== user?._id && new Date(post.date).getTime() >= Date.now());
 
@@ -115,6 +121,7 @@ const PostsFeed: React.FC = () => {
                     
                     <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                     <IconButton onClick={() => handleLikeButton(post._id!)}>
+
                       <ThumbUpIcon fontSize="small" color="primary" />
                       <Typography variant="body2" sx={{ ml: 0.5 }}>
                         {post.likes_number || 0}
@@ -126,6 +133,7 @@ const PostsFeed: React.FC = () => {
                         {post.comments_number || 0}
                       </Typography>
                     </IconButton>
+
                     </Box>
                   </CardContent>
 

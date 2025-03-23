@@ -69,7 +69,7 @@ const Header: React.FC<HeaderProps> = ({ title }) => {
         <List sx={{ width: 250 }}>
           {menuItems.map((item, index) => (
             <ListItem
-              button
+              component="button"
               key={index}
               onClick={() => {
                 navigate(item.path);
