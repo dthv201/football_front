@@ -21,9 +21,9 @@ import CommentIcon from '@mui/icons-material/Comment';
 import PersonIcon from '@mui/icons-material/Person';
 import { Post } from "../../types/Post";
 import { format } from "date-fns";
-import { deletePost, getUserPosts } from "../../services/postService";
+import { deletePost, getUserPosts, handleLike } from "../../services/postService";
 import { toast } from "react-toastify";
-
+import IconButton from "@mui/material/IconButton";
 
 
 
@@ -63,6 +63,17 @@ const UserPosts: React.FC = () => {
         toast.error(`Failed to load posts: ${error}`);
       }
     }, [fetchPosts]);
+
+    const handleLikeButton = useCallback(async (postId: string) => {
+      if (user) {
+        try {
+          await handleLike(postId);
+          await fetchPosts();
+        } catch (error) {
+          console.error(`We couldn't handle your like in the post, error`, error);
+        }
+      }
+    }, [fetchPosts, user]);
 
     useEffect(() => {
         fetchPosts();
@@ -128,18 +139,18 @@ const UserPosts: React.FC = () => {
                 </Box>
                 
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <ThumbUpIcon fontSize="small" color="primary" />
-                    <Typography variant="body2" sx={{ ml: 0.5 }}>
-                      {post.likes_number || 0}
-                    </Typography>
-                  </Box>
-                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <CommentIcon fontSize="small" color="primary" />
-                    <Typography variant="body2" sx={{ ml: 0.5 }}>
-                      {post.comments_number || 0}
-                    </Typography>
-                  </Box>
+                <IconButton onClick={() => handleLikeButton(post._id!)}>
+                      <ThumbUpIcon fontSize="small" color="primary" />
+                      <Typography variant="body2" sx={{ ml: 0.5 }}>
+                        {post.likes_number || 0}
+                      </Typography>
+                    </IconButton>
+                  <IconButton onClick={() => navigate(`/addComments/${post._id!}`)}>
+                      <CommentIcon fontSize="small" color="primary" />
+                      <Typography variant="body2" sx={{ ml: 0.5 }}>
+                        {post.comments_number || 0}
+                      </Typography>
+                    </IconButton>
                 </Box>
               </CardContent>
               

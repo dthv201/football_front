@@ -5,7 +5,8 @@ import { useUserContext } from "../contexts/UserContext";
 import Layout from "../components/page_tamplate/Layout";
 import {
   Card, CardContent, Typography, Box, Divider,
-  CardMedia, CardHeader, CircularProgress, Button
+  CardMedia, CardHeader, CircularProgress, Button,
+  IconButton
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
@@ -14,7 +15,7 @@ import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import CommentIcon from "@mui/icons-material/Comment";
 import { Post } from "../types/Post";
 import { format } from "date-fns";
-import { getAllPosts } from "../services/postService";
+import { getAllPosts, handleLike } from "../services/postService";
 
 const PostsFeed: React.FC = () => {
   const navigate = useNavigate();
@@ -35,6 +36,17 @@ const PostsFeed: React.FC = () => {
       setLoading(false);
     }
   }, [user?._id]);
+
+  const handleLikeButton = useCallback(async (postId: string) => {
+    if (user) {
+      try {
+        await handleLike(postId);
+        await fetchUserPosts();
+      } catch (error) {
+        console.error(`We couldn't handle your like in the post, error`, error);
+      }
+    }
+}, [fetchUserPosts, user]);
 
   useEffect(() => {
     fetchUserPosts();
@@ -102,18 +114,18 @@ const PostsFeed: React.FC = () => {
                     <Divider sx={{ my: 1.5 }} />
                     
                     <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                      <Box sx={{ display: "flex", alignItems: "center" }}>
-                        <ThumbUpIcon fontSize="small" color="primary" />
-                        <Typography variant="body2" sx={{ ml: 0.5 }}>
-                          {post.likes_number || 0}
-                        </Typography>
-                      </Box>
-                      <Box sx={{ display: "flex", alignItems: "center" }}>
-                        <CommentIcon fontSize="small" color="primary" />
-                        <Typography variant="body2" sx={{ ml: 0.5 }}>
-                          {post.comments_number || 0}
-                        </Typography>
-                      </Box>
+                    <IconButton onClick={() => handleLikeButton(post._id!)}>
+                      <ThumbUpIcon fontSize="small" color="primary" />
+                      <Typography variant="body2" sx={{ ml: 0.5 }}>
+                        {post.likes_number || 0}
+                      </Typography>
+                    </IconButton>
+                      <IconButton onClick={() => navigate(`/addComments/${post._id!}`)}>
+                      <CommentIcon fontSize="small" color="primary" />
+                      <Typography variant="body2" sx={{ ml: 0.5 }}>
+                        {post.comments_number || 0}
+                      </Typography>
+                    </IconButton>
                     </Box>
                   </CardContent>
 
