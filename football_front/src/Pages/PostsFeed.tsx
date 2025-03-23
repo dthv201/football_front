@@ -4,7 +4,10 @@ import { useUserContext } from "../contexts/UserContext";
 import Layout from "../components/page_tamplate/Layout";
 import {
   Card, CardContent, Typography, Box, Divider,
-  CardMedia, CardHeader, CircularProgress, Button, IconButton
+
+  CardMedia, CardHeader, CircularProgress, Button,
+  IconButton
+
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
@@ -44,7 +47,9 @@ const PostsFeed: React.FC = () => {
         await handleLike(postId);
         await fetchUserPosts();
       } catch (error) {
-        console.error(`We couldn't handle your like in the post`, error);
+
+        console.error(`We couldn't handle your like in the post, error`, error);
+
       }
     }
 }, [fetchUserPosts, user]);
@@ -116,18 +121,19 @@ const PostsFeed: React.FC = () => {
                     
                     <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                     <IconButton onClick={() => handleLikeButton(post._id!)}>
-                        <ThumbUpIcon fontSize="small" color="primary" />
-                        <Typography variant="body2" sx={{ ml: 0.5 }}>
-                          {post.likes_number || 0}
-                        </Typography>
-                      </IconButton>
 
-                      <IconButton onClick={() => navigate(`/addComments/:${post._id!}`)}>
-                        <CommentIcon fontSize="small" color="primary" />
-                        <Typography variant="body2" sx={{ ml: 0.5 }}>
-                          {post.comments_number || 0}
-                        </Typography>
-                      </IconButton>
+                      <ThumbUpIcon fontSize="small" color="primary" />
+                      <Typography variant="body2" sx={{ ml: 0.5 }}>
+                        {post.likes_number || 0}
+                      </Typography>
+                    </IconButton>
+                      <IconButton onClick={() => navigate(`/addComments/${post._id!}`)}>
+                      <CommentIcon fontSize="small" color="primary" />
+                      <Typography variant="body2" sx={{ ml: 0.5 }}>
+                        {post.comments_number || 0}
+                      </Typography>
+                    </IconButton>
+
                     </Box>
                   </CardContent>
 
