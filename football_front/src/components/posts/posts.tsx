@@ -24,7 +24,7 @@ import { Post } from "../../types/Post";
 import { format } from "date-fns";
 import { deletePost, getUserPosts, handleLike } from "../../services/postService";
 import { toast } from "react-toastify";
-
+import IconButton from "@mui/material/IconButton";
 
 
 
@@ -71,7 +71,9 @@ const UserPosts: React.FC = () => {
           await handleLike(postId);
           await fetchPosts();
         } catch (error) {
-          console.error(`We couldn't handle your like in the post`, error);
+
+          console.error(`We couldn't handle your like in the post, error`, error);
+
         }
       }
     }, [fetchPosts, user]);
@@ -140,19 +142,25 @@ const UserPosts: React.FC = () => {
                 </Box>
                 
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                    <IconButton onClick={() => handleLikeButton(post._id!)}>
+
+                <IconButton onClick={() => handleLikeButton(post._id!)}>
+
                       <ThumbUpIcon fontSize="small" color="primary" />
                       <Typography variant="body2" sx={{ ml: 0.5 }}>
                         {post.likes_number || 0}
                       </Typography>
                     </IconButton>
-                    <IconButton onClick={() => navigate(`/addComments/:${post._id!}`)}>
+
+                  <IconButton onClick={() => navigate(`/addComments/${post._id!}`)}>
+
                       <CommentIcon fontSize="small" color="primary" />
                       <Typography variant="body2" sx={{ ml: 0.5 }}>
                         {post.comments_number || 0}
                       </Typography>
                     </IconButton>
-                  </Box>
+
+                </Box>
+
               </CardContent>
               
               <CardActions sx={{ display: "flex", justifyContent: "flex-end", p: 2, pt: 0 }}>
