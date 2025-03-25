@@ -8,7 +8,7 @@ const getAllPosts = async () => {
 };
 
 const getUserPosts = async (userId?: string) => {
-  const response = await axiosInstance.get<Post[]>(`/posts`, { params: { userId } });
+  const response = await axiosInstance.get<Post[]>(`/posts`,{ params: { owner: userId } });
 
   return response.data;
 };
@@ -38,6 +38,7 @@ const deletePost = async (postId: string) => {
 };
 
 const handleLike = async (postId: string) => {
+  console.log("postId", postId);
   const response = await axiosInstance.post(`posts/like`, {postId});
 
   return response.data;

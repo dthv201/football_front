@@ -24,6 +24,7 @@ import { registerUser, googleSignin } from "../services/auth";
 import { registerSchema } from "../validations/validationSchemas";
 import FormInput from "../components/FormInput";
 import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
+import {  useNavigate } from "react-router-dom";
 // import { useAuth } from "../contexts/AuthContext";
 
 const defaultAvatar = "/avatar.png";
@@ -39,6 +40,7 @@ interface FormData {
 
 const RegisterPage: React.FC = () => {
   // const { setAuthInfo } = useAuth();
+  const navigate = useNavigate();
   const {
     control,
     handleSubmit,
@@ -87,6 +89,7 @@ const RegisterPage: React.FC = () => {
       alert("Something went wrong. Please try again.");
     }
     setLoadingRegister(false);
+    navigate("/profile");
   };
   
 
@@ -104,6 +107,7 @@ const onGoogleSuccess = async (credentialResponse: CredentialResponse) => {
     alert("Something went wrong with Google sign-in.");
   }
   setLoadingGoogle(false);
+  navigate("/profile");
 };
 
 const onGoogleFailure = async () => {

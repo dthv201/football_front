@@ -6,6 +6,7 @@ import { parseExpirationInDays } from "../utils/dateUtils";
 import { LoggedUser, LoginData, User } from "../types/User";
 
 const API_URL = import.meta.env.VITE_SERVER_URL;
+
 const JWT_TOKEN_EXPIRES = import.meta.env.VITE_JWT_TOKEN_EXPIRES;
 
 export interface IUser {
@@ -31,7 +32,7 @@ export const registerUser = async (data: IUser, file?: File) => {
     }
   
     try {
-      const response = await fetch(`/${API_URL}/auth/register`, {
+      const response = await fetch(`${API_URL}/auth/register`, {
         method: "POST",
         body: formData,
       });
