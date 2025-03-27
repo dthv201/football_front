@@ -37,15 +37,15 @@ const deletePost = async (postId: string) => {
   await axiosInstance.delete(`/posts/${postId}`);
 };
 
-const handleLike = async (postId: string) => {
-  console.log("postId", postId);
-  const response = await axiosInstance.post(`posts/like`, {postId});
+const handleLike = async (postId: string, userId:string) => {
+
+  const response = await axiosInstance.post(`posts/like`, {postId, userId});
 
   return response.data;
 };
 
 const addParticipant = async (postId: string, userId: string) => {
-  const response = await axiosInstance.post(`/posts/add-participant`, { postId, userId });
+  const response = await axiosInstance.post<Post>(`/posts/add-participant`, { postId, userId });
   return response.data;
 };
 

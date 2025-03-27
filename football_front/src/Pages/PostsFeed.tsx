@@ -44,7 +44,7 @@ const PostsFeed: React.FC = () => {
   const handleLikeButton = useCallback(async (postId: string) => {
     if (user) {
       try {
-        await handleLike(postId);
+        await handleLike(postId, user._id);
         await fetchUserPosts();
       } catch (error) {
 
