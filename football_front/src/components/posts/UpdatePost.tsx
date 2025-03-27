@@ -68,7 +68,7 @@ const UserPosts: React.FC = () => {
     const handleLikeButton = useCallback(async (postId: string) => {
       if (user) {
         try {
-          await handleLike(postId);
+          await handleLike(postId, user._id);
           await fetchPosts();
         } catch (error) {
           console.error(`We couldn't handle your like in the post`, error);
