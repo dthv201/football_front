@@ -9,7 +9,6 @@ const getAllPosts = async () => {
 
 const getUserPosts = async (userId?: string) => {
   const response = await axiosInstance.get<Post[]>(`/posts`,{ params: { owner: userId } });
-
   return response.data;
 };
 

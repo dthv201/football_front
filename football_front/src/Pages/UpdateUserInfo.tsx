@@ -22,6 +22,7 @@ import Layout from "../components/page_tamplate/Layout";
 import { getImageUrl } from "../utils/getImageUrl";
 import { updateUser } from "../services/userService";
 import { useUserContext } from "../contexts/UserContext";
+import { useNavigate } from "react-router-dom";
 
 
 interface UpdateFormData {
@@ -38,6 +39,7 @@ const UpdateUserInfo: React.FC = () => {
   const [preview, setPreview] = useState<string>(
     user?.profile_img ? getImageUrl(user.profile_img) : "/avatar.png"
   );
+  const navigate = useNavigate();
 
   const { register, handleSubmit, control, watch, reset } = useForm<UpdateFormData>({
     defaultValues: {
@@ -87,8 +89,8 @@ const UpdateUserInfo: React.FC = () => {
     if(user)
       await updateUser(user._id, formData); 
     alert("changes saved",);
-    
     setLoading(false);
+    navigate("/profile");
      
   };
 

@@ -13,6 +13,7 @@ import {
 } from "@mui/material";
 import { useUserContext } from "../contexts/UserContext";
 import { Comment, createComment, getPostComments } from "../services/commentsService";
+import { set } from "date-fns";
 
 const PostsComments: React.FC = () => {
   const { user } = useUserContext();
@@ -22,6 +23,7 @@ const PostsComments: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
 
   const handleAddComment = async () => {
+    setLoading(true);
     if (!newComment.trim()) return;
 
     const commentData = {
@@ -40,6 +42,7 @@ const PostsComments: React.FC = () => {
     }
 
     setNewComment("");
+    setLoading(false);
   };
 
   useEffect(() => {

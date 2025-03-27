@@ -10,7 +10,7 @@ import {
 import Grid from "@mui/material/Grid2";
 import { Post } from "../types/Post";
 import { getAllPosts} from "../services/postService";
-import PostCard from "../components/posts/postCard"; // adjust the path as needed
+import PostCard from "../components/posts/postCard"; 
 
 const PostsFeed: React.FC = () => {
   const { user } = useUserContext();
