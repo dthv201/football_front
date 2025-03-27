@@ -38,7 +38,7 @@ const UserPosts: React.FC = () => {
     try {
       setIsLoading(true);
       const userPosts = await getUserPosts(user?._id);
-      // For each post, fetch the dynamic comment count from your endpoint.
+   
       const postsWithCounts = await Promise.all(
         userPosts.map(async (post) => {
           try {
@@ -46,7 +46,7 @@ const UserPosts: React.FC = () => {
             return { ...post, comments_number: count };
           } catch (error) {
             console.error("Error fetching comments count for post", post._id, error);
-            return post; // If there's an error, leave the post unchanged.
+            return post; 
           }
         })
       );

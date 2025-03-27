@@ -124,25 +124,30 @@ const UpdatePost: React.FC = () => {
         date: dateTime,
       };
 
-      // If a new file is selected, upload it and attach the URL
+    
       if (selectedFile) {
-        console.log("Uploading new file...");
+        console.log("Uploading new file using axiosInstance...");
         const formData = new FormData();
         formData.append("file", selectedFile);
-        const response = await fetch("http://localhost:3000/file", {
-          method: "POST",
-          body: formData,
+       
+        const response = await axiosInstance.post<{ url: string }>("/file", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
         });
-        if (!response.ok) {
-          throw new Error("File upload failed");
-        }
-        const result = await response.json();
-        console.log("File upload result:", result);
+        const result = response.data;
         editedPost.img = result.url;
-      } else {
+        
+
+        console.log("File upload result:", response.data);
+     
+      } 
+      else {
         console.log("No new file selected; keeping existing image.");
         editedPost.img = post.img;
       }
+      
+      
 
       console.log("Final edited post to send:", editedPost);
       await updatePost(post._id, editedPost);
