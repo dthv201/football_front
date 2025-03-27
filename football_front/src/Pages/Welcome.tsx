@@ -87,7 +87,8 @@ const WelcomePage: React.FC = () => {
         <Grid item xs={12} md={6} sx={{ display: "flex", justifyContent: "center" }}>
           <Box
             component="img"
-            src="/src/assets/soccer-banner.png"  
+      
+            src="public/soccer-banner.png"  
             alt="Soccer Game"
             sx={{
               width: "100%",

@@ -17,6 +17,10 @@ export const getPostComments = async (postId: string) => {
     const posts = await axiosInstance.get<Comment[]>(`/comments/posts/${postId}`);
     return posts.data;
 }
-
+export const getCommentsCount = async (postId: string): Promise<number> => {
+    const response = await axiosInstance.get<{ count: number }>(`/comments/countComments/${postId}`);
+    return response.data.count;
+  };
+  
 
 

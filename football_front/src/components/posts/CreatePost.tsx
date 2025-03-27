@@ -83,16 +83,16 @@ const CreatePost: React.FC = () => {
     setLoading(true);
 
     try {
-      // Combine date+time
+ 
       const dateTime = new Date(`${data.date}T${data.time}`).toISOString();
 
-      // A) If a file is chosen, upload it to /file first
+ 
       let imageUrl: string | undefined;
       if (selectedFile) {
         const formData = new FormData();
         formData.append("file", selectedFile);
 
-        // This call returns { url: "http://localhost:3000/uploads/xxxx.jpg" }
+   
         const uploadRes = await axiosInstance.post<{ url: string }>(
           "/file",
           formData
@@ -100,21 +100,21 @@ const CreatePost: React.FC = () => {
         imageUrl = uploadRes.data.url;
       }
 
-      // B) Build the final JSON object for the post
+ 
       const postData = {
         title: data.title,
         location: data.location,
         content: data.content,
         date: dateTime,
         owner: user._id,
-        img: imageUrl, // the newly uploaded URL or undefined
+        img: imageUrl, 
       };
 
-      // C) POST /posts with JSON
+
       const createRes = await axiosInstance.post("/posts", postData);
       if (createRes.status === 201) {
         alert("Post created successfully!");
-        reset();        // Clears text fields
+        reset();     
         setSelectedFile(null);
         setPreview(null);
         navigate("/profile");
@@ -145,13 +145,10 @@ const CreatePost: React.FC = () => {
             borderRadius: 2,
           }}
         >
-          {/* 
-              Let RHF manage only title, location, date, time, content.
-              The file is handled outside RHF via selectedFile state.
-          */}
+     
           <form onSubmit={handleSubmit(onSubmit)}>
             <Grid container spacing={3}>
-              {/* IMAGE UPLOAD (no register("img")) */}
+          
               <Grid size={12}>
                 <FormControl fullWidth>
                   <FormLabel
@@ -251,7 +248,7 @@ const CreatePost: React.FC = () => {
                 </FormControl>
               </Grid>
 
-              {/* LOCATION */}
+             
               <Grid size={12}>
                 <FormControl fullWidth error={!!errors.location}>
                   <FormLabel
@@ -271,7 +268,7 @@ const CreatePost: React.FC = () => {
                 </FormControl>
               </Grid>
 
-              {/* DATE */}
+         
               <Grid size={12}>
                 <FormControl fullWidth error={!!errors.date}>
                   <FormLabel
@@ -292,7 +289,7 @@ const CreatePost: React.FC = () => {
                 </FormControl>
               </Grid>
 
-              {/* TIME */}
+          
               <Grid size={12}>
                 <FormControl fullWidth error={!!errors.time}>
                   <FormLabel
@@ -313,7 +310,7 @@ const CreatePost: React.FC = () => {
                 </FormControl>
               </Grid>
 
-              {/* CONTENT */}
+          
               <Grid size={12}>
                 <FormControl fullWidth error={!!errors.content}>
                   <FormLabel
@@ -335,7 +332,7 @@ const CreatePost: React.FC = () => {
                 </FormControl>
               </Grid>
 
-              {/* SUBMIT BUTTON */}
+       
               <Grid size={12} sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
                 <Button
                   type="submit"

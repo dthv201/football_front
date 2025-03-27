@@ -14,6 +14,7 @@ import {
 import { useUserContext } from "../contexts/UserContext";
 import { Comment, createComment, getPostComments } from "../services/commentsService";
 
+
 const PostsComments: React.FC = () => {
   const { user } = useUserContext();
   const { postId } = useParams();
@@ -22,6 +23,7 @@ const PostsComments: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
 
   const handleAddComment = async () => {
+    setLoading(true);
     if (!newComment.trim()) return;
 
     const commentData = {
@@ -40,6 +42,7 @@ const PostsComments: React.FC = () => {
     }
 
     setNewComment("");
+    setLoading(false);
   };
 
   useEffect(() => {

@@ -38,8 +38,7 @@ const LoginPage: React.FC = () => {
 const onGoogleSuccess = async (credentialResponse: CredentialResponse) => {
   console.log("Google response:", credentialResponse);
   try {
-    const res = await googleSignin(credentialResponse);
-    console.log("Backend response:", res);
+     await googleSignin(credentialResponse);
     navigate("/profile");
   } catch (error) {
     console.error("Error during Google sign-in:", error);
