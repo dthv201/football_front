@@ -133,7 +133,7 @@ const GameInfoPage: React.FC = () => {
   return (
     <Layout title="Game Details">
       <Grid container spacing={2}>
-        <Grid item xs={6}>
+        <Grid size={6}>
           <Paper sx={{ p: 3, borderRadius: 2, boxShadow: 3 }}>
             <Typography variant="h5" fontWeight="bold" gutterBottom>
               {post.title}
@@ -148,7 +148,7 @@ const GameInfoPage: React.FC = () => {
             <Typography variant="body2">{post.content}</Typography>
           </Paper>
         </Grid>
-        <Grid item xs={2}>
+        <Grid size={2}>
           <Paper sx={{ p: 3, borderRadius: 2, boxShadow: 3 }}>
             <Typography variant="h6" fontWeight="bold">
               Participants:
@@ -163,7 +163,7 @@ const GameInfoPage: React.FC = () => {
             </List>
           </Paper>
         </Grid>
-        <Grid item xs={2}>
+        <Grid size={2}>
           <Paper sx={{ p: 3, borderRadius: 1, boxShadow: 1 }}>
             <Typography variant="h6" fontWeight="bold" color="primary">
               Team A ⚽
@@ -178,7 +178,7 @@ const GameInfoPage: React.FC = () => {
             </List>
           </Paper>
         </Grid>
-        <Grid item xs={2}>
+        <Grid size={2}>
           <Paper sx={{ p: 3, borderRadius: 1, boxShadow: 1 }}>
             <Typography variant="h6" fontWeight="bold" color="secondary">
               Team B ⚽

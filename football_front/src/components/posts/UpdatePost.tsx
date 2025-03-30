@@ -13,7 +13,7 @@ import {
   FormControl,
   FormLabel,
   Divider,
-  CircularProgress,
+  // CircularProgress,
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import {
@@ -184,7 +184,7 @@ const UpdatePost: React.FC = () => {
             <form onSubmit={handleSubmit(onSubmit)}>
               <Grid container spacing={3}>
                 {/* IMAGE UPLOAD */}
-                <Grid item xs={12}>
+                <Grid size={12}>
                   <FormControl fullWidth>
                     <FormLabel sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
                       <UploadFile fontSize="small" /> Image
@@ -250,12 +250,12 @@ const UpdatePost: React.FC = () => {
                   </FormControl>
                 </Grid>
 
-                <Grid item xs={12}>
+                <Grid size={12}>
                   <Divider />
                 </Grid>
 
                 {/* TITLE */}
-                <Grid item xs={12}>
+                <Grid size={12}>
                   <FormControl fullWidth error={!!errors.title}>
                     <FormLabel sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
                       <Article fontSize="small" /> Title
@@ -273,7 +273,7 @@ const UpdatePost: React.FC = () => {
                 </Grid>
 
                 {/* LOCATION */}
-                <Grid item xs={12}>
+                <Grid size={12}>
                   <FormControl fullWidth error={!!errors.location}>
                     <FormLabel sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
                       <LocationOn fontSize="small" /> Location
@@ -291,7 +291,7 @@ const UpdatePost: React.FC = () => {
                 </Grid>
 
                 {/* DATE */}
-                <Grid item xs={12}>
+                <Grid size={12}>
                   <FormControl fullWidth error={!!errors.date}>
                     <FormLabel sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
                       <AccessTime fontSize="small" /> Date
@@ -310,7 +310,7 @@ const UpdatePost: React.FC = () => {
                 </Grid>
 
                 {/* TIME */}
-                <Grid item xs={12}>
+                <Grid size={12}>
                   <FormControl fullWidth error={!!errors.time}>
                     <FormLabel sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
                       <AccessTime fontSize="small" /> Time
@@ -329,7 +329,7 @@ const UpdatePost: React.FC = () => {
                 </Grid>
 
                 {/* DESCRIPTION */}
-                <Grid item xs={12}>
+                <Grid size={12}>
                   <FormControl fullWidth error={!!errors.content}>
                     <FormLabel sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
                       <Description fontSize="small" /> Description
@@ -349,7 +349,7 @@ const UpdatePost: React.FC = () => {
                 </Grid>
 
                 {/* SUBMIT BUTTON */}
-                <Grid item xs={12} sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+                <Grid size={12} sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
                   <Button
                     type="submit"
                     variant="contained"
@@ -358,7 +358,8 @@ const UpdatePost: React.FC = () => {
                   >
                     {loading ? (
                       <Box sx={{ display: "flex", alignItems: "center" }}>
-                        <BluePinkCircularProgress size={20} sx={{ mr: 1 }} />
+                        {/* <BluePinkCircularProgress size={20} sx={{ mr: 1 }} /> */}
+                        <BluePinkCircularProgress size={20} />
                         Processing...
                       </Box>
                     ) : (
