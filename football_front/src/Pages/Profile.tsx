@@ -8,14 +8,16 @@ import Layout from "../components/page_tamplate/Layout";
 import { Container, Typography, Box, Button } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import UserPosts from "../components/posts/posts";
+import BluePinkCircularProgress from "../components/CircularWait";
 
 const ProfilePage: React.FC = () => {
     const navigate = useNavigate();
-    const { user } = useUserContext();
+    const { user, setUser } = useUserContext();
 
     const handleLogout = async () => {
         try {
             await userLogout();
+            setUser(null); // Assuming you have a setUser function in your context to clear user data
             navigate("/");
             toast.success("Logged out successfully");
         } catch (error) {
@@ -35,9 +37,7 @@ const ProfilePage: React.FC = () => {
                             {user ? (
                                 <ProfileDetails />
                             ) : (
-                                <Typography variant="h6" textAlign="center">
-                                    User not found
-                                </Typography>
+                                <BluePinkCircularProgress />
                             )}
                             <Box sx={{ display: "flex", justifyContent: "center", gap: 1, mt: 2 }}>
                                 <Button variant="contained" color="primary" onClick={() => navigate("/update")}>

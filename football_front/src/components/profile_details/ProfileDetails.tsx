@@ -3,12 +3,12 @@ import { Container, Box, Avatar, Typography } from "@mui/material";
 import { getImageUrl } from "../../utils/getImageUrl";
 import { useUserContext } from "../../contexts/UserContext";
 
+
 const ProfileDetails: React.FC = () => {
     const { user } = useUserContext();
     useEffect(() => {
       if (user) {
-        const imageUrl = getImageUrl(user.profile_img);
-        console.log("Computed profile image URL:", imageUrl);
+        getImageUrl(user.profile_img);
 }
 }, [user]);
 
